@@ -23,7 +23,6 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/eeprom.h>
-#include <stdio.h>
 
 #include "lcd.h"
 
@@ -301,26 +300,14 @@ long measure(void)
   PULLDOWN_RANGE;      /* Use range signal as pull down */
   
   while(1) {
-	  //lcd_string("ana gowaaaaaaa",0);
-	  
     /* Enable comperator and check value */
     DISCHARGE_OFF;
     ms_spin(1);
     
     /* This value must be checked in every loop */
     if (BUTTON_PUSHED)
-      {
-        lcd_string("allo?", 0);
-		ms_spin(10);
-        return 0;
-      }
-      /*char buffer[20];
-      sprintf(buffer, "%i", ACSR);  // Convert unsigned long to string
-      lcd_string(buffer, 0);
-      ms_spin(10);
-	   sprintf(buffer, "%i", ACO);  // Convert unsigned long to string
-	   lcd_string(buffer, 0);
-	   ms_spin(10);*/
+      return 0;
+      
     if (!(ACSR & (1<<ACO)))
       break;
     
@@ -330,8 +317,6 @@ long measure(void)
     
     
   } 
-  lcd_string("ana kharagt bara",0);
-  ms_spin(10);
   
   DISCHARGE_ON;
   ms_spin(EXTRA_DISCHARGE_MS);
@@ -364,12 +349,7 @@ long measure(void)
       
       /* This value must be checked in every loop */
       if (BUTTON_PUSHED)
-	  
-	 {
-		 lcd_string("case 2",0);
-		  ms_spin(10);
-		  return 0;
-	 }
+        return 0;
     }
     
     if (i >= LOW_RANGE_TIMEOUT) {
@@ -394,13 +374,9 @@ long measure(void)
   while ((measure_state != STATE_DONE) && (++i < HIGH_RANGE_TIMEOUT)) {
     ms_spin(1);
     
-    
+    /* This value must be checked in every loop */
     if (BUTTON_PUSHED)
-      {
-		  lcd_string("case 3",0);
-		   ms_spin(10);
-		   return 0;
-	  }
+      return 0;
   }
   
   /* Done, discharge cap now */
@@ -414,9 +390,8 @@ long measure(void)
     rangemode &= ~RANGE_OVERFLOW;
     
   measure_state = STATE_IDLE;
-  lcd_string("henaa",0);
-  ms_spin(10);
-  return  ((unsigned long)timer_highword << 16) + TIMER_VALUE;;
+  
+  return ((unsigned long)timer_highword << 16) + TIMER_VALUE;
 }
 
 /* 
@@ -631,18 +606,12 @@ int main(void)
   while (1) {
     /* Toggle high/low threshold */
     rangemode ^= RANGE_HIGH_THRESH;
-    
-	// l = 10;
-	char buffer[20]; 
     l = measure();
-    sprintf(buffer, "%lu", l);  // Convert unsigned long to string
-    lcd_string(buffer, 0);
     if (BUTTON_PUSHED) {
       /* Stop any cap. charging */
       LED_OFF;
       LOW_RANGE;
       DISCHARGE_ON;
-       // Enough to hold a long integer
       
       /* Menu implementation */
       switch(menu()) {
@@ -666,31 +635,9 @@ int main(void)
         eeprom_write();
         break;  
       }
-      calc_and_show(l);
-	  //lcd_string("fffff", 0);
-	  //lcd_string(l,0);
-	  
-	 // ms_spin(10);
-	  //char buffer[20];
-	  //l = measure();
-	  //sprintf(buffer, "%lu", l);  // Convert unsigned long to string
-	  //lcd_string(buffer, 0);
-	  
-	  //ms_spin(10);
-	  
+      
     }
     else
-	{
-		/*lcd_string("rfrfr", 0);
-		ms_spin(10);
-		char buffer[20];
-		l = measure();
-		sprintf(buffer, "%lu", l);  // Convert unsigned long to string
-		lcd_string(buffer, 0);*/
-		//calc_and_show(l);
-	}
-	
-      
-	  
+      calc_and_show(l);
   }
 }
