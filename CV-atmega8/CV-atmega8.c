@@ -24,6 +24,7 @@ Data Stack size         : 256
 #include <mega8.h>
 #include <delay.h>
 #include <eeprom.h>
+//#pragma data:code 
 #include "lcd.h"
 
 // Declare your global variables here
@@ -31,12 +32,13 @@ Data Stack size         : 256
 /* Hardware IO abstraction macros */
  
 /* AIN0 out also discharges cap */
-#define DISCHARGE_ON  DDRD |= (1<<6)
-#define DISCHARGE_OFF DDRD &= ~(1<<6)
+#define DISCHARGE_ON  DDRD.6 = 1
+#define DISCHARGE_OFF DDRD.6 = 0
 
 /* Range control */
-#define HIGH_RANGE PORTD |= (1<<5); DDRD |= (1<<5)
-#define LOW_RANGE  DDRD &= ~(1<<5); PORTD &= ~(1<<5)
+#define HIGH_RANGE PORTD.5 = 1; DDRD.5 = 1
+#define LOW_RANGE  DDRD.5 = 0; PORTD.5 = 0
+
 #define PULLDOWN_RANGE PORTD &= ~(1<<5); DDRD |= (1<<5)
 
 /* Threshold selection */
@@ -50,16 +52,14 @@ Data Stack size         : 256
 #define TIMER_STOP  TCCR1B = 0
 
 /* Led abstraction */
-#define LED_ON  PORTD &= ~(1<<4)
-#define LED_OFF PORTD |= (1<<4)
+#define LED_ON  PORTD.4 = 0
+#define LED_OFF PORTD.4 = 1
 
 /* Button abstraction */
-#define BUTTON_PUSHED (!(PIND & (1<<2)))
+#define BUTTON_PUSHED (!PIND.2)
 
 char decades[5] = {'p','n','u','m',' '};
-
 char lcdbuffer[32];
-
 unsigned short volatile timer_highword;
 
 
@@ -121,58 +121,60 @@ unsigned long calib_offset[4] = {0,0,0,0};
 unsigned int gx, gy;
 unsigned long gresult;
 
-void MUL_LONG_SHORT_S2(unsigned int x, unsigned int y, unsigned long *result)
-{
-    gx = x;
-    gy = y;
+// void MUL_LONG_SHORT_S2(unsigned int x, unsigned int y, unsigned long *result)
+// {
+//     gx = x;
+//     gy = y;
 
-    #asm
-        lds r24, _gx
-        lds r25, _gx+1
-        lds r22, _gy
-        lds r23, _gy+1
+//     #asm
+//         lds r24, _gx
+//         lds r25, 
+//         lds r22, _gy
+//         lds r23, _gy+1
 
-        clr r18
-        clr r19
-        clr r20
-        clr r21
+//         clr r18
+//         clr r19
+//         clr r20
+//         clr r21
 
-        ; mul x_low * y_low
-        mul r24, r22
-        mov r21, r1
-        clr r1
+//         ; mul x_low * y_low
+//         mul r24, r22
+//         mov r21, r1
+//         clr r1
 
-        ; mul x_low * y_high
-        mul r24, r23
-        add r21, r0
-        adc r20, r1
-        adc r19, r18
-        clr r1
+//         ; mul x_low * y_high
+//         mul r24, r23
+//         add r21, r0
+//         adc r20, r1
+//         adc r19, r18
+//         clr r1
 
-        ; mul x_high * y_low
-        mul r25, r22
-        add r21, r0
-        adc r20, r1
-        adc r19, r18
-        clr r1
+//         ; mul x_high * y_low
+//         mul r25, r22
+//         add r21, r0
+//         adc r20, r1
+//         adc r19, r18
+//         clr r1
 
-        ; mul x_high * y_high
-        mul r25, r23
-        add r20, r0
-        adc r19, r1
-        adc r18, r18
-        clr r1
+//         ; mul x_high * y_high
+//         mul r25, r23
+//         add r20, r0
+//         adc r19, r1
+//         adc r18, r18
+//         clr r1
 
-        ; store into gresult
-        sts _gresult, r21
-        sts _gresult+1, r20
-        sts _gresult+2, r19
-        sts _gresult+3, r18
-    #endasm
+//         ; store into gresult
+//         sts _gresult, r21
+//         sts _gresult+1, r20
+//         sts _gresult+2, r19
+//         sts _gresult+3, r18
+//     #endasm
 
-      *result = gresult;
-  }
+//       *result = gresult;
+//   }
 
+#define MUL_LONG_SHORT_S2(x, y, result_ptr) \
+    *(result_ptr) = (unsigned long)(x) * (unsigned short)(y);
 
 // Standard Input/Output functions
 #include <stdio.h>

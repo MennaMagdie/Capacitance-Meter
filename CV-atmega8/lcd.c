@@ -33,7 +33,7 @@
 //
 
 
-#include <avr/io.h>
+#include <io.h>
 
 #include <stdlib.h>
 //#include <util/delay.h>
@@ -52,8 +52,6 @@
 #define CG_RAM_ADDR  0x40 //0b01000000  //      
 
 
-#define SWAP_NIBBLES(x) asm volatile("swap %0" : "=r" (x) : "0" (x))
-
 /* Use these defines to specify lcd port and RS, EN pin */
 #define PORT PORTB  
 #define DDR DDRB
@@ -70,26 +68,24 @@
 /* spin for ms milliseconds */
 void ms_spin(unsigned short ms)
 {
-        if (!ms)
-                return;
+    unsigned short outer, inner;
 
-        /* the inner loop takes 4 cycles per iteration */
-        __asm__ __volatile__ (
-                "1:                     \n"
-                "       ldi r26, %3     \n"
-                "       ldi r27, %2     \n"
-                "2:     sbiw r26, 1     \n"
-                "       brne 2b         \n"
-                "       sbiw %0, 1      \n"
-                "       brne 1b         \n"
-                : "=w" (ms)
-                : "w" (ms), "i" (LOOPS_PER_MS >> 8), "i" (0xff & LOOPS_PER_MS)
-                );
+    for (outer = 0; outer < ms; outer++)
+    {
+        inner = LOOPS_PER_MS;
+        while (inner--)
+        {
+            #asm
+                nop
+            #endasm
+        }
+    }
 }
 
 
+
 /* 8-bit count, 3 cycles/loop */
-static inline void
+/*static inline void
 _delay_loop_1(unsigned char __count)
 {
         if (!__count)
@@ -101,7 +97,21 @@ _delay_loop_1(unsigned char __count)
                 : "=r" (__count)
                 : "0" (__count)
         );
+}   */
+
+void _delay_loop_1(unsigned char __count)
+{
+    if (!__count)
+        return;
+
+    do {
+        #asm
+            nop
+        #endasm
+    } while (--__count);
 }
+
+
 
 
 void lcd_putchar(unsigned char rs, unsigned char data )
@@ -200,6 +210,19 @@ void lcd_string(char *p, unsigned char pos)
    0123.4567  (pointplace = 2)
    89ABCD.EF  (pointplace = 1)
 */
+
+
+unsigned char swap_nibbles(unsigned char x)
+{
+    #asm
+        mov r16, x
+        swap r16
+        mov x, r16
+    #endasm
+    return x;
+}
+
+
 void hex2ascii(char *target, long value, char pointplace)
 {
    int i;
@@ -208,7 +231,7 @@ void hex2ascii(char *target, long value, char pointplace)
    for (i=3; i>=0; i--) {
      
      hex = value>>24;   /* Get msbyte */
-     SWAP_NIBBLES(hex); /* Get high nibble */
+    hex = swap_nibbles(hex); /* Get high nibble */
      hex &= 0x0F;
      
      *(target++) = ((hex < 0x0A) ? (hex + '0') : (hex + ('A' - 0x0A)));
