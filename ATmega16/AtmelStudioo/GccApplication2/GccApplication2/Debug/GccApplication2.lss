@@ -1,0 +1,1922 @@
+
+GccApplication2.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000aa4  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         000000b0  00800060  00000aa4  00000b38  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000034  00800110  00800110  00000be8  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000be8  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000c18  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000140  00000000  00000000  00000c58  2**3
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   00001372  00000000  00000000  00000d98  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 00000844  00000000  00000000  0000210a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00000d13  00000000  00000000  0000294e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  0000027c  00000000  00000000  00003664  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000004d0  00000000  00000000  000038e0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    00000ae0  00000000  00000000  00003db0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 000000a0  00000000  00000000  00004890  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   8:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  10:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  14:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  18:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  1c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  20:	0c 94 b3 01 	jmp	0x366	; 0x366 <__vector_8>
+  24:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  28:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  2c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  30:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  34:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  38:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  3c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  40:	0c 94 91 01 	jmp	0x322	; 0x322 <__vector_16>
+  44:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  48:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  4c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  50:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d4 e0       	ldi	r29, 0x04	; 4
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	11 e0       	ldi	r17, 0x01	; 1
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	e4 ea       	ldi	r30, 0xA4	; 164
+  68:	fa e0       	ldi	r31, 0x0A	; 10
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+  70:	a0 31       	cpi	r26, 0x10	; 16
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
+
+00000076 <__do_clear_bss>:
+  76:	21 e0       	ldi	r18, 0x01	; 1
+  78:	a0 e1       	ldi	r26, 0x10	; 16
+  7a:	b1 e0       	ldi	r27, 0x01	; 1
+  7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
+
+0000007e <.do_clear_bss_loop>:
+  7e:	1d 92       	st	X+, r1
+
+00000080 <.do_clear_bss_start>:
+  80:	a4 34       	cpi	r26, 0x44	; 68
+  82:	b2 07       	cpc	r27, r18
+  84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
+  86:	0e 94 b7 04 	call	0x96e	; 0x96e <main>
+  8a:	0c 94 50 05 	jmp	0xaa0	; 0xaa0 <_exit>
+
+0000008e <__bad_interrupt>:
+  8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000092 <ms_spin>:
+       *(target++) = '.';
+      
+   }
+   
+   
+}
+  92:	00 97       	sbiw	r24, 0x00	; 0
+  94:	31 f0       	breq	.+12     	; 0xa2 <ms_spin+0x10>
+  96:	a0 ed       	ldi	r26, 0xD0	; 208
+  98:	b7 e0       	ldi	r27, 0x07	; 7
+  9a:	11 97       	sbiw	r26, 0x01	; 1
+  9c:	f1 f7       	brne	.-4      	; 0x9a <ms_spin+0x8>
+  9e:	01 97       	sbiw	r24, 0x01	; 1
+  a0:	d1 f7       	brne	.-12     	; 0x96 <ms_spin+0x4>
+  a2:	08 95       	ret
+
+000000a4 <lcd_putchar>:
+  a4:	1f 93       	push	r17
+  a6:	cf 93       	push	r28
+  a8:	df 93       	push	r29
+  aa:	c8 2f       	mov	r28, r24
+  ac:	16 2f       	mov	r17, r22
+  ae:	81 11       	cpse	r24, r1
+  b0:	c0 e2       	ldi	r28, 0x20	; 32
+  b2:	81 2f       	mov	r24, r17
+  b4:	82 95       	swap	r24
+  b6:	8f 70       	andi	r24, 0x0F	; 15
+  b8:	8c 2b       	or	r24, r28
+  ba:	88 bb       	out	0x18, r24	; 24
+  bc:	c4 9a       	sbi	0x18, 4	; 24
+  be:	d5 e0       	ldi	r29, 0x05	; 5
+  c0:	8d 2f       	mov	r24, r29
+  c2:	8a 95       	dec	r24
+  c4:	f1 f7       	brne	.-4      	; 0xc2 <lcd_putchar+0x1e>
+  c6:	c4 98       	cbi	0x18, 4	; 24
+  c8:	82 e0       	ldi	r24, 0x02	; 2
+  ca:	90 e0       	ldi	r25, 0x00	; 0
+  cc:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+  d0:	1f 70       	andi	r17, 0x0F	; 15
+  d2:	c1 2b       	or	r28, r17
+  d4:	c8 bb       	out	0x18, r28	; 24
+  d6:	c4 9a       	sbi	0x18, 4	; 24
+  d8:	da 95       	dec	r29
+  da:	f1 f7       	brne	.-4      	; 0xd8 <lcd_putchar+0x34>
+  dc:	c4 98       	cbi	0x18, 4	; 24
+  de:	82 e0       	ldi	r24, 0x02	; 2
+  e0:	90 e0       	ldi	r25, 0x00	; 0
+  e2:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+  e6:	df 91       	pop	r29
+  e8:	cf 91       	pop	r28
+  ea:	1f 91       	pop	r17
+  ec:	08 95       	ret
+
+000000ee <lcd_init>:
+  ee:	18 ba       	out	0x18, r1	; 24
+  f0:	8f ef       	ldi	r24, 0xFF	; 255
+  f2:	87 bb       	out	0x17, r24	; 23
+  f4:	82 e3       	ldi	r24, 0x32	; 50
+  f6:	90 e0       	ldi	r25, 0x00	; 0
+  f8:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+  fc:	63 e3       	ldi	r22, 0x33	; 51
+  fe:	80 e0       	ldi	r24, 0x00	; 0
+ 100:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 104:	62 e3       	ldi	r22, 0x32	; 50
+ 106:	80 e0       	ldi	r24, 0x00	; 0
+ 108:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 10c:	68 e2       	ldi	r22, 0x28	; 40
+ 10e:	80 e0       	ldi	r24, 0x00	; 0
+ 110:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 114:	68 e0       	ldi	r22, 0x08	; 8
+ 116:	80 e0       	ldi	r24, 0x00	; 0
+ 118:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 11c:	6c e0       	ldi	r22, 0x0C	; 12
+ 11e:	80 e0       	ldi	r24, 0x00	; 0
+ 120:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 124:	61 e0       	ldi	r22, 0x01	; 1
+ 126:	80 e0       	ldi	r24, 0x00	; 0
+ 128:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 12c:	66 e0       	ldi	r22, 0x06	; 6
+ 12e:	80 e0       	ldi	r24, 0x00	; 0
+ 130:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 134:	08 95       	ret
+
+00000136 <lcd_clear>:
+ 136:	61 e0       	ldi	r22, 0x01	; 1
+ 138:	80 e0       	ldi	r24, 0x00	; 0
+ 13a:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 13e:	08 95       	ret
+
+00000140 <lcd_string>:
+ 140:	ff 92       	push	r15
+ 142:	0f 93       	push	r16
+ 144:	1f 93       	push	r17
+ 146:	cf 93       	push	r28
+ 148:	df 93       	push	r29
+ 14a:	d8 2f       	mov	r29, r24
+ 14c:	f9 2e       	mov	r15, r25
+ 14e:	c6 2f       	mov	r28, r22
+ 150:	60 31       	cpi	r22, 0x10	; 16
+ 152:	40 f4       	brcc	.+16     	; 0x164 <lcd_string+0x24>
+ 154:	60 e8       	ldi	r22, 0x80	; 128
+ 156:	6c 0f       	add	r22, r28
+ 158:	80 e0       	ldi	r24, 0x00	; 0
+ 15a:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 15e:	0d 2f       	mov	r16, r29
+ 160:	1f 2d       	mov	r17, r15
+ 162:	14 c0       	rjmp	.+40     	; 0x18c <lcd_string+0x4c>
+ 164:	60 32       	cpi	r22, 0x20	; 32
+ 166:	b8 f4       	brcc	.+46     	; 0x196 <lcd_string+0x56>
+ 168:	60 eb       	ldi	r22, 0xB0	; 176
+ 16a:	6c 0f       	add	r22, r28
+ 16c:	80 e0       	ldi	r24, 0x00	; 0
+ 16e:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 172:	f5 cf       	rjmp	.-22     	; 0x15e <lcd_string+0x1e>
+ 174:	c0 32       	cpi	r28, 0x20	; 32
+ 176:	78 f4       	brcc	.+30     	; 0x196 <lcd_string+0x56>
+ 178:	81 e0       	ldi	r24, 0x01	; 1
+ 17a:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 17e:	cf 5f       	subi	r28, 0xFF	; 255
+ 180:	c0 31       	cpi	r28, 0x10	; 16
+ 182:	21 f4       	brne	.+8      	; 0x18c <lcd_string+0x4c>
+ 184:	60 ec       	ldi	r22, 0xC0	; 192
+ 186:	80 e0       	ldi	r24, 0x00	; 0
+ 188:	0e 94 52 00 	call	0xa4	; 0xa4 <lcd_putchar>
+ 18c:	f8 01       	movw	r30, r16
+ 18e:	61 91       	ld	r22, Z+
+ 190:	8f 01       	movw	r16, r30
+ 192:	61 11       	cpse	r22, r1
+ 194:	ef cf       	rjmp	.-34     	; 0x174 <lcd_string+0x34>
+ 196:	df 91       	pop	r29
+ 198:	cf 91       	pop	r28
+ 19a:	1f 91       	pop	r17
+ 19c:	0f 91       	pop	r16
+ 19e:	ff 90       	pop	r15
+ 1a0:	08 95       	ret
+
+000001a2 <long2ascii>:
+   x.xxx.xxx.xxx
+*/
+
+unsigned long tenths_tab[10] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
+char long2ascii(char *target, unsigned long value)
+{
+ 1a2:	6f 92       	push	r6
+ 1a4:	7f 92       	push	r7
+ 1a6:	8f 92       	push	r8
+ 1a8:	9f 92       	push	r9
+ 1aa:	af 92       	push	r10
+ 1ac:	bf 92       	push	r11
+ 1ae:	cf 92       	push	r12
+ 1b0:	df 92       	push	r13
+ 1b2:	ef 92       	push	r14
+ 1b4:	ff 92       	push	r15
+ 1b6:	0f 93       	push	r16
+ 1b8:	1f 93       	push	r17
+ 1ba:	cf 93       	push	r28
+ 1bc:	df 93       	push	r29
+ 1be:	3c 01       	movw	r6, r24
+ 1c0:	20 e0       	ldi	r18, 0x00	; 0
+ 1c2:	31 e0       	ldi	r19, 0x01	; 1
+  unsigned char p, pos=0;
+  unsigned char numbernow=0;
+  char ret=0;
+ 1c4:	80 e0       	ldi	r24, 0x00	; 0
+
+unsigned long tenths_tab[10] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
+char long2ascii(char *target, unsigned long value)
+{
+  unsigned char p, pos=0;
+  unsigned char numbernow=0;
+ 1c6:	10 e0       	ldi	r17, 0x00	; 0
+*/
+
+unsigned long tenths_tab[10] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
+char long2ascii(char *target, unsigned long value)
+{
+  unsigned char p, pos=0;
+ 1c8:	90 e0       	ldi	r25, 0x00	; 0
+          pos++;
+        }
+        
+        if (p==6) {
+          /* We also need to place a space instead of . */
+          target[pos] = ' ';
+ 1ca:	68 94       	set
+ 1cc:	cc 24       	eor	r12, r12
+ 1ce:	c5 f8       	bld	r12, 5
+          pos++;
+        }
+      }
+    } 
+    else {
+      target[pos] = '0';
+ 1d0:	0f 2e       	mov	r0, r31
+ 1d2:	f0 e3       	ldi	r31, 0x30	; 48
+ 1d4:	ff 2e       	mov	r15, r31
+ 1d6:	f0 2d       	mov	r31, r0
+      while (value >= tenths_tab[p]) {
+        target[pos]++;
+        value -= tenths_tab[p];
+      }
+      pos++;
+      numbernow = 1;
+ 1d8:	ee 24       	eor	r14, r14
+ 1da:	e3 94       	inc	r14
+        ret++;
+      case 4: 
+        ret++;
+      case 7: 
+        ret++;
+        target[pos] = '.';  
+ 1dc:	0f 2e       	mov	r0, r31
+ 1de:	fe e2       	ldi	r31, 0x2E	; 46
+ 1e0:	df 2e       	mov	r13, r31
+ 1e2:	f0 2d       	mov	r31, r0
+  unsigned char numbernow=0;
+  char ret=0;
+  
+  for (p=0;(p<10) && (pos<5);p++) {
+    
+    if (numbernow) {
+ 1e4:	11 23       	and	r17, r17
+ 1e6:	09 f4       	brne	.+2      	; 0x1ea <long2ascii+0x48>
+ 1e8:	79 c0       	rjmp	.+242    	; 0x2dc <long2ascii+0x13a>
+      /* Eventually place dot */
+      /* Notice the nice fallthrough construction. */
+      switch(p) {
+ 1ea:	24 30       	cpi	r18, 0x04	; 4
+ 1ec:	29 f0       	breq	.+10     	; 0x1f8 <long2ascii+0x56>
+ 1ee:	27 30       	cpi	r18, 0x07	; 7
+ 1f0:	21 f0       	breq	.+8      	; 0x1fa <long2ascii+0x58>
+ 1f2:	21 30       	cpi	r18, 0x01	; 1
+ 1f4:	d9 f4       	brne	.+54     	; 0x22c <long2ascii+0x8a>
+      case 1: 
+        ret++;
+ 1f6:	8f 5f       	subi	r24, 0xFF	; 255
+      case 4: 
+        ret++;
+ 1f8:	8f 5f       	subi	r24, 0xFF	; 255
+      case 7: 
+        ret++;
+ 1fa:	8f 5f       	subi	r24, 0xFF	; 255
+        target[pos] = '.';  
+ 1fc:	f3 01       	movw	r30, r6
+ 1fe:	e9 0f       	add	r30, r25
+ 200:	f1 1d       	adc	r31, r1
+ 202:	d0 82       	st	Z, r13
+        pos++;
+ 204:	9f 5f       	subi	r25, 0xFF	; 255
+      }      
+    }
+    
+    if (value < tenths_tab[p]) {
+ 206:	a2 2f       	mov	r26, r18
+ 208:	b0 e0       	ldi	r27, 0x00	; 0
+ 20a:	fd 01       	movw	r30, r26
+ 20c:	ee 0f       	add	r30, r30
+ 20e:	ff 1f       	adc	r31, r31
+ 210:	ee 0f       	add	r30, r30
+ 212:	ff 1f       	adc	r31, r31
+ 214:	e0 5a       	subi	r30, 0xA0	; 160
+ 216:	ff 4f       	sbci	r31, 0xFF	; 255
+ 218:	80 80       	ld	r8, Z
+ 21a:	91 80       	ldd	r9, Z+1	; 0x01
+ 21c:	a2 80       	ldd	r10, Z+2	; 0x02
+ 21e:	b3 80       	ldd	r11, Z+3	; 0x03
+ 220:	48 15       	cp	r20, r8
+ 222:	59 05       	cpc	r21, r9
+ 224:	6a 05       	cpc	r22, r10
+ 226:	7b 05       	cpc	r23, r11
+ 228:	98 f0       	brcs	.+38     	; 0x250 <long2ascii+0xae>
+ 22a:	27 c0       	rjmp	.+78     	; 0x27a <long2ascii+0xd8>
+ 22c:	a2 2f       	mov	r26, r18
+ 22e:	b0 e0       	ldi	r27, 0x00	; 0
+ 230:	fd 01       	movw	r30, r26
+ 232:	ee 0f       	add	r30, r30
+ 234:	ff 1f       	adc	r31, r31
+ 236:	ee 0f       	add	r30, r30
+ 238:	ff 1f       	adc	r31, r31
+ 23a:	e0 5a       	subi	r30, 0xA0	; 160
+ 23c:	ff 4f       	sbci	r31, 0xFF	; 255
+ 23e:	80 80       	ld	r8, Z
+ 240:	91 80       	ldd	r9, Z+1	; 0x01
+ 242:	a2 80       	ldd	r10, Z+2	; 0x02
+ 244:	b3 80       	ldd	r11, Z+3	; 0x03
+ 246:	48 15       	cp	r20, r8
+ 248:	59 05       	cpc	r21, r9
+ 24a:	6a 05       	cpc	r22, r10
+ 24c:	7b 05       	cpc	r23, r11
+ 24e:	a8 f4       	brcc	.+42     	; 0x27a <long2ascii+0xd8>
+      if (numbernow) {
+        /* Inside number, put a zero */
+        target[pos] = '0';  
+ 250:	f3 01       	movw	r30, r6
+ 252:	e9 0f       	add	r30, r25
+ 254:	f1 1d       	adc	r31, r1
+ 256:	f0 82       	st	Z, r15
+        pos++;
+ 258:	9f 5f       	subi	r25, 0xFF	; 255
+ 25a:	38 c0       	rjmp	.+112    	; 0x2cc <long2ascii+0x12a>
+      }
+      else {
+        /* Check if we need to pad with spaces */
+        if (p>=6) {
+ 25c:	26 30       	cpi	r18, 0x06	; 6
+ 25e:	28 f0       	brcs	.+10     	; 0x26a <long2ascii+0xc8>
+          target[pos] = ' ';
+ 260:	f3 01       	movw	r30, r6
+ 262:	e9 0f       	add	r30, r25
+ 264:	f1 1d       	adc	r31, r1
+ 266:	c0 82       	st	Z, r12
+          pos++;
+ 268:	9f 5f       	subi	r25, 0xFF	; 255
+        }
+        
+        if (p==6) {
+ 26a:	26 30       	cpi	r18, 0x06	; 6
+ 26c:	79 f5       	brne	.+94     	; 0x2cc <long2ascii+0x12a>
+          /* We also need to place a space instead of . */
+          target[pos] = ' ';
+ 26e:	f3 01       	movw	r30, r6
+ 270:	e9 0f       	add	r30, r25
+ 272:	f1 1d       	adc	r31, r1
+ 274:	c0 82       	st	Z, r12
+          pos++;
+ 276:	9f 5f       	subi	r25, 0xFF	; 255
+ 278:	2b c0       	rjmp	.+86     	; 0x2d0 <long2ascii+0x12e>
+        }
+      }
+    } 
+    else {
+      target[pos] = '0';
+ 27a:	f3 01       	movw	r30, r6
+ 27c:	e9 0f       	add	r30, r25
+ 27e:	f1 1d       	adc	r31, r1
+ 280:	f0 82       	st	Z, r15
+      while (value >= tenths_tab[p]) {
+ 282:	8d 01       	movw	r16, r26
+ 284:	00 0f       	add	r16, r16
+ 286:	11 1f       	adc	r17, r17
+ 288:	00 0f       	add	r16, r16
+ 28a:	11 1f       	adc	r17, r17
+ 28c:	00 5a       	subi	r16, 0xA0	; 160
+ 28e:	1f 4f       	sbci	r17, 0xFF	; 255
+ 290:	e8 01       	movw	r28, r16
+ 292:	88 80       	ld	r8, Y
+ 294:	99 80       	ldd	r9, Y+1	; 0x01
+ 296:	aa 80       	ldd	r10, Y+2	; 0x02
+ 298:	bb 80       	ldd	r11, Y+3	; 0x03
+ 29a:	48 15       	cp	r20, r8
+ 29c:	59 05       	cpc	r21, r9
+ 29e:	6a 05       	cpc	r22, r10
+ 2a0:	7b 05       	cpc	r23, r11
+ 2a2:	90 f0       	brcs	.+36     	; 0x2c8 <long2ascii+0x126>
+        target[pos]++;
+        value -= tenths_tab[p];
+ 2a4:	d8 01       	movw	r26, r16
+      }
+    } 
+    else {
+      target[pos] = '0';
+      while (value >= tenths_tab[p]) {
+        target[pos]++;
+ 2a6:	10 81       	ld	r17, Z
+ 2a8:	1f 5f       	subi	r17, 0xFF	; 255
+ 2aa:	10 83       	st	Z, r17
+        value -= tenths_tab[p];
+ 2ac:	8d 90       	ld	r8, X+
+ 2ae:	9d 90       	ld	r9, X+
+ 2b0:	ad 90       	ld	r10, X+
+ 2b2:	bc 90       	ld	r11, X
+ 2b4:	13 97       	sbiw	r26, 0x03	; 3
+ 2b6:	48 19       	sub	r20, r8
+ 2b8:	59 09       	sbc	r21, r9
+ 2ba:	6a 09       	sbc	r22, r10
+ 2bc:	7b 09       	sbc	r23, r11
+        }
+      }
+    } 
+    else {
+      target[pos] = '0';
+      while (value >= tenths_tab[p]) {
+ 2be:	48 15       	cp	r20, r8
+ 2c0:	59 05       	cpc	r21, r9
+ 2c2:	6a 05       	cpc	r22, r10
+ 2c4:	7b 05       	cpc	r23, r11
+ 2c6:	78 f7       	brcc	.-34     	; 0x2a6 <long2ascii+0x104>
+        target[pos]++;
+        value -= tenths_tab[p];
+      }
+      pos++;
+ 2c8:	9f 5f       	subi	r25, 0xFF	; 255
+      numbernow = 1;
+ 2ca:	1e 2d       	mov	r17, r14
+{
+  unsigned char p, pos=0;
+  unsigned char numbernow=0;
+  char ret=0;
+  
+  for (p=0;(p<10) && (pos<5);p++) {
+ 2cc:	3a 30       	cpi	r19, 0x0A	; 10
+ 2ce:	d0 f4       	brcc	.+52     	; 0x304 <long2ascii+0x162>
+ 2d0:	3f 5f       	subi	r19, 0xFF	; 255
+ 2d2:	2f 5f       	subi	r18, 0xFF	; 255
+ 2d4:	95 30       	cpi	r25, 0x05	; 5
+ 2d6:	08 f4       	brcc	.+2      	; 0x2da <long2ascii+0x138>
+ 2d8:	85 cf       	rjmp	.-246    	; 0x1e4 <long2ascii+0x42>
+ 2da:	14 c0       	rjmp	.+40     	; 0x304 <long2ascii+0x162>
+        target[pos] = '.';  
+        pos++;
+      }      
+    }
+    
+    if (value < tenths_tab[p]) {
+ 2dc:	a2 2f       	mov	r26, r18
+ 2de:	b0 e0       	ldi	r27, 0x00	; 0
+ 2e0:	fd 01       	movw	r30, r26
+ 2e2:	ee 0f       	add	r30, r30
+ 2e4:	ff 1f       	adc	r31, r31
+ 2e6:	ee 0f       	add	r30, r30
+ 2e8:	ff 1f       	adc	r31, r31
+ 2ea:	e0 5a       	subi	r30, 0xA0	; 160
+ 2ec:	ff 4f       	sbci	r31, 0xFF	; 255
+ 2ee:	80 80       	ld	r8, Z
+ 2f0:	91 80       	ldd	r9, Z+1	; 0x01
+ 2f2:	a2 80       	ldd	r10, Z+2	; 0x02
+ 2f4:	b3 80       	ldd	r11, Z+3	; 0x03
+ 2f6:	48 15       	cp	r20, r8
+ 2f8:	59 05       	cpc	r21, r9
+ 2fa:	6a 05       	cpc	r22, r10
+ 2fc:	7b 05       	cpc	r23, r11
+ 2fe:	08 f4       	brcc	.+2      	; 0x302 <long2ascii+0x160>
+ 300:	ad cf       	rjmp	.-166    	; 0x25c <long2ascii+0xba>
+ 302:	bb cf       	rjmp	.-138    	; 0x27a <long2ascii+0xd8>
+      numbernow = 1;
+    }
+  }
+  
+  return ret;
+}
+ 304:	df 91       	pop	r29
+ 306:	cf 91       	pop	r28
+ 308:	1f 91       	pop	r17
+ 30a:	0f 91       	pop	r16
+ 30c:	ff 90       	pop	r15
+ 30e:	ef 90       	pop	r14
+ 310:	df 90       	pop	r13
+ 312:	cf 90       	pop	r12
+ 314:	bf 90       	pop	r11
+ 316:	af 90       	pop	r10
+ 318:	9f 90       	pop	r9
+ 31a:	8f 90       	pop	r8
+ 31c:	7f 90       	pop	r7
+ 31e:	6f 90       	pop	r6
+ 320:	08 95       	ret
+
+00000322 <__vector_16>:
+	: "r" (x), "r" (y)	\
+	)
+
+/* Interrupt implementation */
+ISR(ANA_COMP_vect)
+{
+ 322:	1f 92       	push	r1
+ 324:	0f 92       	push	r0
+ 326:	0f b6       	in	r0, 0x3f	; 63
+ 328:	0f 92       	push	r0
+ 32a:	11 24       	eor	r1, r1
+ 32c:	8f 93       	push	r24
+  if (measure_state == STATE_LOW_THRESH) {
+ 32e:	80 91 21 01 	lds	r24, 0x0121	; 0x800121 <measure_state>
+ 332:	81 30       	cpi	r24, 0x01	; 1
+ 334:	41 f4       	brne	.+16     	; 0x346 <__vector_16+0x24>
+    /* We just got low threshold interrupt, start timer and set high threshold */
+    TIMER_START;
+ 336:	8e bd       	out	0x2e, r24	; 46
+    ADMUX = set_admux;
+ 338:	80 91 20 01 	lds	r24, 0x0120	; 0x800120 <set_admux>
+ 33c:	87 b9       	out	0x07, r24	; 7
+    measure_state = STATE_HIGH_THRESH;
+ 33e:	82 e0       	ldi	r24, 0x02	; 2
+ 340:	80 93 21 01 	sts	0x0121, r24	; 0x800121 <measure_state>
+ 344:	0a c0       	rjmp	.+20     	; 0x35a <__vector_16+0x38>
+  }
+  else if(measure_state == STATE_HIGH_THRESH) {
+ 346:	80 91 21 01 	lds	r24, 0x0121	; 0x800121 <measure_state>
+ 34a:	82 30       	cpi	r24, 0x02	; 2
+ 34c:	31 f4       	brne	.+12     	; 0x35a <__vector_16+0x38>
+    /* High threshold interrupt, verify it, then stop timer */
+    if (ACSR & (1<<ACO)) {
+ 34e:	45 9b       	sbis	0x08, 5	; 8
+ 350:	04 c0       	rjmp	.+8      	; 0x35a <__vector_16+0x38>
+      TIMER_STOP;
+ 352:	1e bc       	out	0x2e, r1	; 46
+      measure_state = STATE_DONE;
+ 354:	83 e0       	ldi	r24, 0x03	; 3
+ 356:	80 93 21 01 	sts	0x0121, r24	; 0x800121 <measure_state>
+    }
+  }
+}
+ 35a:	8f 91       	pop	r24
+ 35c:	0f 90       	pop	r0
+ 35e:	0f be       	out	0x3f, r0	; 63
+ 360:	0f 90       	pop	r0
+ 362:	1f 90       	pop	r1
+ 364:	18 95       	reti
+
+00000366 <__vector_8>:
+
+
+ISR(TIMER1_OVF_vect)
+{
+ 366:	1f 92       	push	r1
+ 368:	0f 92       	push	r0
+ 36a:	0f b6       	in	r0, 0x3f	; 63
+ 36c:	0f 92       	push	r0
+ 36e:	11 24       	eor	r1, r1
+ 370:	8f 93       	push	r24
+ 372:	9f 93       	push	r25
+  /* Timer 1 counts the low 16 bits, this interrupt updates the high 16 bits */
+  timer_highword++;
+ 374:	80 91 22 01 	lds	r24, 0x0122	; 0x800122 <timer_highword>
+ 378:	90 91 23 01 	lds	r25, 0x0123	; 0x800123 <timer_highword+0x1>
+ 37c:	01 96       	adiw	r24, 0x01	; 1
+ 37e:	90 93 23 01 	sts	0x0123, r25	; 0x800123 <timer_highword+0x1>
+ 382:	80 93 22 01 	sts	0x0122, r24	; 0x800122 <timer_highword>
+}
+ 386:	9f 91       	pop	r25
+ 388:	8f 91       	pop	r24
+ 38a:	0f 90       	pop	r0
+ 38c:	0f be       	out	0x3f, r0	; 63
+ 38e:	0f 90       	pop	r0
+ 390:	1f 90       	pop	r1
+ 392:	18 95       	reti
+
+00000394 <eeprom_read>:
+     
+*/
+
+void eeprom_read(void)
+{
+  if (eeprom_read_byte((void*)EEPROM_HEADER) != 'C')
+ 394:	81 e0       	ldi	r24, 0x01	; 1
+ 396:	90 e0       	ldi	r25, 0x00	; 0
+ 398:	0e 94 31 05 	call	0xa62	; 0xa62 <eeprom_read_byte>
+ 39c:	83 34       	cpi	r24, 0x43	; 67
+ 39e:	b1 f4       	brne	.+44     	; 0x3cc <eeprom_read+0x38>
+    return;
+    
+  if (eeprom_read_byte((void*)EEPROM_HEADER+1) != 'D')
+ 3a0:	82 e0       	ldi	r24, 0x02	; 2
+ 3a2:	90 e0       	ldi	r25, 0x00	; 0
+ 3a4:	0e 94 31 05 	call	0xa62	; 0xa62 <eeprom_read_byte>
+ 3a8:	84 34       	cpi	r24, 0x44	; 68
+ 3aa:	81 f4       	brne	.+32     	; 0x3cc <eeprom_read+0x38>
+    return;
+  
+  eeprom_read_block(calib_offset, (void*)EEPROM_DATA, SIZE_OF_CALIBOFFSET);
+ 3ac:	40 e1       	ldi	r20, 0x10	; 16
+ 3ae:	50 e0       	ldi	r21, 0x00	; 0
+ 3b0:	63 e0       	ldi	r22, 0x03	; 3
+ 3b2:	70 e0       	ldi	r23, 0x00	; 0
+ 3b4:	80 e1       	ldi	r24, 0x10	; 16
+ 3b6:	91 e0       	ldi	r25, 0x01	; 1
+ 3b8:	0e 94 21 05 	call	0xa42	; 0xa42 <eeprom_read_block>
+  eeprom_read_block(calib, (void*)EEPROM_DATA + SIZE_OF_CALIBOFFSET, SIZE_OF_CALIB);
+ 3bc:	48 e0       	ldi	r20, 0x08	; 8
+ 3be:	50 e0       	ldi	r21, 0x00	; 0
+ 3c0:	63 e1       	ldi	r22, 0x13	; 19
+ 3c2:	70 e0       	ldi	r23, 0x00	; 0
+ 3c4:	88 e8       	ldi	r24, 0x88	; 136
+ 3c6:	90 e0       	ldi	r25, 0x00	; 0
+ 3c8:	0e 94 21 05 	call	0xa42	; 0xa42 <eeprom_read_block>
+ 3cc:	08 95       	ret
+
+000003ce <eeprom_write>:
+  
+}
+
+void eeprom_write(void)
+{
+  eeprom_write_byte((void*)EEPROM_HEADER, 'C');
+ 3ce:	63 e4       	ldi	r22, 0x43	; 67
+ 3d0:	81 e0       	ldi	r24, 0x01	; 1
+ 3d2:	90 e0       	ldi	r25, 0x00	; 0
+ 3d4:	0e 94 43 05 	call	0xa86	; 0xa86 <eeprom_write_byte>
+  eeprom_write_byte((void*)EEPROM_HEADER+1, 'D');
+ 3d8:	64 e4       	ldi	r22, 0x44	; 68
+ 3da:	82 e0       	ldi	r24, 0x02	; 2
+ 3dc:	90 e0       	ldi	r25, 0x00	; 0
+ 3de:	0e 94 43 05 	call	0xa86	; 0xa86 <eeprom_write_byte>
+  
+  eeprom_write_block(calib_offset, (void*)EEPROM_DATA, SIZE_OF_CALIBOFFSET);
+ 3e2:	40 e1       	ldi	r20, 0x10	; 16
+ 3e4:	50 e0       	ldi	r21, 0x00	; 0
+ 3e6:	63 e0       	ldi	r22, 0x03	; 3
+ 3e8:	70 e0       	ldi	r23, 0x00	; 0
+ 3ea:	80 e1       	ldi	r24, 0x10	; 16
+ 3ec:	91 e0       	ldi	r25, 0x01	; 1
+ 3ee:	0e 94 39 05 	call	0xa72	; 0xa72 <eeprom_write_block>
+  eeprom_write_block(calib, (void*)(EEPROM_DATA + SIZE_OF_CALIBOFFSET), SIZE_OF_CALIB);
+ 3f2:	48 e0       	ldi	r20, 0x08	; 8
+ 3f4:	50 e0       	ldi	r21, 0x00	; 0
+ 3f6:	63 e1       	ldi	r22, 0x13	; 19
+ 3f8:	70 e0       	ldi	r23, 0x00	; 0
+ 3fa:	88 e8       	ldi	r24, 0x88	; 136
+ 3fc:	90 e0       	ldi	r25, 0x00	; 0
+ 3fe:	0e 94 39 05 	call	0xa72	; 0xa72 <eeprom_write_block>
+ 402:	08 95       	ret
+
+00000404 <measure>:
+
+}
+
+long measure(void)
+{
+ 404:	cf 93       	push	r28
+ 406:	df 93       	push	r29
+  unsigned short i;
+  
+  measure_state = STATE_IDLE;
+ 408:	10 92 21 01 	sts	0x0121, r1	; 0x800121 <measure_state>
+  
+  /* Discharge cap until below low threshold + some extra */
+  ADMUX = ADMUX_LOW;
+ 40c:	81 e0       	ldi	r24, 0x01	; 1
+ 40e:	87 b9       	out	0x07, r24	; 7
+  PULLDOWN_RANGE;      /* Use range signal as pull down */
+ 410:	95 98       	cbi	0x12, 5	; 18
+ 412:	8d 9a       	sbi	0x11, 5	; 17
+  
+  while(1) {
+    /* Enable comperator and check value */
+    DISCHARGE_OFF;
+ 414:	8e 98       	cbi	0x11, 6	; 17
+    ms_spin(1);
+ 416:	81 e0       	ldi	r24, 0x01	; 1
+ 418:	90 e0       	ldi	r25, 0x00	; 0
+ 41a:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+    
+    /* This value must be checked in every loop */
+    if (BUTTON_PUSHED)
+ 41e:	82 9b       	sbis	0x10, 2	; 16
+ 420:	91 c0       	rjmp	.+290    	; 0x544 <__stack+0xe5>
+      return 0;
+      
+    if (!(ACSR & (1<<ACO)))
+ 422:	45 9b       	sbis	0x08, 5	; 8
+ 424:	06 c0       	rjmp	.+12     	; 0x432 <measure+0x2e>
+      break;
+    
+    /* Discharge for a while */
+    DISCHARGE_ON;
+ 426:	8e 9a       	sbi	0x11, 6	; 17
+    ms_spin(10);
+ 428:	8a e0       	ldi	r24, 0x0A	; 10
+ 42a:	90 e0       	ldi	r25, 0x00	; 0
+ 42c:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+    
+    
+  } 
+ 430:	f1 cf       	rjmp	.-30     	; 0x414 <measure+0x10>
+  
+  DISCHARGE_ON;
+ 432:	8e 9a       	sbi	0x11, 6	; 17
+  ms_spin(EXTRA_DISCHARGE_MS);
+ 434:	84 e6       	ldi	r24, 0x64	; 100
+ 436:	90 e0       	ldi	r25, 0x00	; 0
+ 438:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+  
+  /* Prepare: reset timer, low range */
+  TIMER_STOP;
+ 43c:	1e bc       	out	0x2e, r1	; 46
+  TIMER_VALUE = 0;
+ 43e:	1d bc       	out	0x2d, r1	; 45
+ 440:	1c bc       	out	0x2c, r1	; 44
+  timer_highword = 0;
+ 442:	10 92 23 01 	sts	0x0123, r1	; 0x800123 <timer_highword+0x1>
+ 446:	10 92 22 01 	sts	0x0122, r1	; 0x800122 <timer_highword>
+
+  LOW_RANGE;
+ 44a:	8d 98       	cbi	0x11, 5	; 17
+ 44c:	95 98       	cbi	0x12, 5	; 18
+
+  measure_state = STATE_LOW_THRESH;
+ 44e:	81 e0       	ldi	r24, 0x01	; 1
+ 450:	80 93 21 01 	sts	0x0121, r24	; 0x800121 <measure_state>
+  
+  /* High or medium threshold */
+  if (rangemode & RANGE_HIGH_THRESH)
+ 454:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 458:	80 ff       	sbrs	r24, 0
+ 45a:	04 c0       	rjmp	.+8      	; 0x464 <__stack+0x5>
+    set_admux = ADMUX_HIGH;
+ 45c:	83 e0       	ldi	r24, 0x03	; 3
+ 45e:	80 93 20 01 	sts	0x0120, r24	; 0x800120 <set_admux>
+ 462:	03 c0       	rjmp	.+6      	; 0x46a <__stack+0xb>
+  else
+    set_admux = ADMUX_MEDIUM;
+ 464:	82 e0       	ldi	r24, 0x02	; 2
+ 466:	80 93 20 01 	sts	0x0120, r24	; 0x800120 <set_admux>
+  
+  /* Apply step */
+  LED_ON;
+ 46a:	94 98       	cbi	0x12, 4	; 18
+  DISCHARGE_OFF;
+ 46c:	8e 98       	cbi	0x11, 6	; 17
+  
+  if (rangemode & RANGE_AUTO) {
+ 46e:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 472:	82 fd       	sbrc	r24, 2
+ 474:	08 c0       	rjmp	.+16     	; 0x486 <__stack+0x27>
+ 476:	2a c0       	rjmp	.+84     	; 0x4cc <__stack+0x6d>
+  
+    /* Autorange: See if low range produces something before LOW_RANGE_TIMEOUT ms */
+    i = 0;
+    while ((measure_state == STATE_LOW_THRESH) && (++i < LOW_RANGE_TIMEOUT)) {
+      ms_spin(1);
+ 478:	81 e0       	ldi	r24, 0x01	; 1
+ 47a:	90 e0       	ldi	r25, 0x00	; 0
+ 47c:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+      
+      /* This value must be checked in every loop */
+      if (BUTTON_PUSHED)
+ 480:	82 99       	sbic	0x10, 2	; 16
+ 482:	03 c0       	rjmp	.+6      	; 0x48a <__stack+0x2b>
+ 484:	63 c0       	rjmp	.+198    	; 0x54c <__stack+0xed>
+ 486:	c0 e0       	ldi	r28, 0x00	; 0
+ 488:	d0 e0       	ldi	r29, 0x00	; 0
+  
+  if (rangemode & RANGE_AUTO) {
+  
+    /* Autorange: See if low range produces something before LOW_RANGE_TIMEOUT ms */
+    i = 0;
+    while ((measure_state == STATE_LOW_THRESH) && (++i < LOW_RANGE_TIMEOUT)) {
+ 48a:	80 91 21 01 	lds	r24, 0x0121	; 0x800121 <measure_state>
+ 48e:	81 30       	cpi	r24, 0x01	; 1
+ 490:	31 f4       	brne	.+12     	; 0x49e <__stack+0x3f>
+ 492:	21 96       	adiw	r28, 0x01	; 1
+ 494:	c4 3f       	cpi	r28, 0xF4	; 244
+ 496:	81 e0       	ldi	r24, 0x01	; 1
+ 498:	d8 07       	cpc	r29, r24
+ 49a:	71 f7       	brne	.-36     	; 0x478 <__stack+0x19>
+ 49c:	03 c0       	rjmp	.+6      	; 0x4a4 <__stack+0x45>
+      /* This value must be checked in every loop */
+      if (BUTTON_PUSHED)
+        return 0;
+    }
+    
+    if (i >= LOW_RANGE_TIMEOUT) {
+ 49e:	c4 3f       	cpi	r28, 0xF4	; 244
+ 4a0:	d1 40       	sbci	r29, 0x01	; 1
+ 4a2:	70 f0       	brcs	.+28     	; 0x4c0 <__stack+0x61>
+      /* low range timeout, go to high range (better discharge a little first) */
+      DISCHARGE_ON;
+ 4a4:	8e 9a       	sbi	0x11, 6	; 17
+      ms_spin(EXTRA_DISCHARGE_MS); 
+ 4a6:	84 e6       	ldi	r24, 0x64	; 100
+ 4a8:	90 e0       	ldi	r25, 0x00	; 0
+ 4aa:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+      DISCHARGE_OFF;
+ 4ae:	8e 98       	cbi	0x11, 6	; 17
+      HIGH_RANGE;
+ 4b0:	95 9a       	sbi	0x12, 5	; 18
+ 4b2:	8d 9a       	sbi	0x11, 5	; 17
+      rangemode |= RANGE_HIGH;
+ 4b4:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 4b8:	82 60       	ori	r24, 0x02	; 2
+ 4ba:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+ 4be:	12 c0       	rjmp	.+36     	; 0x4e4 <__stack+0x85>
+    }
+    else {
+      /* low range was ok, set flag accordingly */
+      rangemode &= ~RANGE_HIGH;
+ 4c0:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 4c4:	8d 7f       	andi	r24, 0xFD	; 253
+ 4c6:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+ 4ca:	0c c0       	rjmp	.+24     	; 0x4e4 <__stack+0x85>
+    }
+  }
+  else if (rangemode & RANGE_HIGH) {
+ 4cc:	81 ff       	sbrs	r24, 1
+ 4ce:	0a c0       	rjmp	.+20     	; 0x4e4 <__stack+0x85>
+    HIGH_RANGE;
+ 4d0:	95 9a       	sbi	0x12, 5	; 18
+ 4d2:	8d 9a       	sbi	0x11, 5	; 17
+ 4d4:	07 c0       	rjmp	.+14     	; 0x4e4 <__stack+0x85>
+  }
+  
+  /* Wait for completion, timing out after HIGH_RANGE_TIMEOUT */
+  i = 0;
+  while ((measure_state != STATE_DONE) && (++i < HIGH_RANGE_TIMEOUT)) {
+    ms_spin(1);
+ 4d6:	81 e0       	ldi	r24, 0x01	; 1
+ 4d8:	90 e0       	ldi	r25, 0x00	; 0
+ 4da:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+    
+    /* This value must be checked in every loop */
+    if (BUTTON_PUSHED)
+ 4de:	82 99       	sbic	0x10, 2	; 16
+ 4e0:	03 c0       	rjmp	.+6      	; 0x4e8 <__stack+0x89>
+ 4e2:	38 c0       	rjmp	.+112    	; 0x554 <__stack+0xf5>
+ 4e4:	c0 e1       	ldi	r28, 0x10	; 16
+ 4e6:	d7 e2       	ldi	r29, 0x27	; 39
+    HIGH_RANGE;
+  }
+  
+  /* Wait for completion, timing out after HIGH_RANGE_TIMEOUT */
+  i = 0;
+  while ((measure_state != STATE_DONE) && (++i < HIGH_RANGE_TIMEOUT)) {
+ 4e8:	80 91 21 01 	lds	r24, 0x0121	; 0x800121 <measure_state>
+ 4ec:	83 30       	cpi	r24, 0x03	; 3
+ 4ee:	11 f0       	breq	.+4      	; 0x4f4 <__stack+0x95>
+ 4f0:	21 97       	sbiw	r28, 0x01	; 1
+ 4f2:	89 f7       	brne	.-30     	; 0x4d6 <__stack+0x77>
+    if (BUTTON_PUSHED)
+      return 0;
+  }
+  
+  /* Done, discharge cap now */
+  LOW_RANGE;
+ 4f4:	8d 98       	cbi	0x11, 5	; 17
+ 4f6:	95 98       	cbi	0x12, 5	; 18
+  DISCHARGE_ON;
+ 4f8:	8e 9a       	sbi	0x11, 6	; 17
+  LED_OFF;
+ 4fa:	94 9a       	sbi	0x12, 4	; 18
+  
+  if (measure_state != STATE_DONE)
+ 4fc:	80 91 21 01 	lds	r24, 0x0121	; 0x800121 <measure_state>
+ 500:	83 30       	cpi	r24, 0x03	; 3
+ 502:	31 f0       	breq	.+12     	; 0x510 <__stack+0xb1>
+    rangemode |= RANGE_OVERFLOW;
+ 504:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 508:	88 60       	ori	r24, 0x08	; 8
+ 50a:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+ 50e:	05 c0       	rjmp	.+10     	; 0x51a <__stack+0xbb>
+  else
+    rangemode &= ~RANGE_OVERFLOW;
+ 510:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 514:	87 7f       	andi	r24, 0xF7	; 247
+ 516:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+    
+  measure_state = STATE_IDLE;
+ 51a:	10 92 21 01 	sts	0x0121, r1	; 0x800121 <measure_state>
+  
+  return ((unsigned long)timer_highword << 16) + TIMER_VALUE;
+ 51e:	60 91 22 01 	lds	r22, 0x0122	; 0x800122 <timer_highword>
+ 522:	70 91 23 01 	lds	r23, 0x0123	; 0x800123 <timer_highword+0x1>
+ 526:	2c b5       	in	r18, 0x2c	; 44
+ 528:	3d b5       	in	r19, 0x2d	; 45
+ 52a:	cb 01       	movw	r24, r22
+ 52c:	a0 e0       	ldi	r26, 0x00	; 0
+ 52e:	b0 e0       	ldi	r27, 0x00	; 0
+ 530:	dc 01       	movw	r26, r24
+ 532:	99 27       	eor	r25, r25
+ 534:	88 27       	eor	r24, r24
+ 536:	bc 01       	movw	r22, r24
+ 538:	cd 01       	movw	r24, r26
+ 53a:	62 0f       	add	r22, r18
+ 53c:	73 1f       	adc	r23, r19
+ 53e:	81 1d       	adc	r24, r1
+ 540:	91 1d       	adc	r25, r1
+ 542:	0b c0       	rjmp	.+22     	; 0x55a <__stack+0xfb>
+    DISCHARGE_OFF;
+    ms_spin(1);
+    
+    /* This value must be checked in every loop */
+    if (BUTTON_PUSHED)
+      return 0;
+ 544:	60 e0       	ldi	r22, 0x00	; 0
+ 546:	70 e0       	ldi	r23, 0x00	; 0
+ 548:	cb 01       	movw	r24, r22
+ 54a:	07 c0       	rjmp	.+14     	; 0x55a <__stack+0xfb>
+    while ((measure_state == STATE_LOW_THRESH) && (++i < LOW_RANGE_TIMEOUT)) {
+      ms_spin(1);
+      
+      /* This value must be checked in every loop */
+      if (BUTTON_PUSHED)
+        return 0;
+ 54c:	60 e0       	ldi	r22, 0x00	; 0
+ 54e:	70 e0       	ldi	r23, 0x00	; 0
+ 550:	cb 01       	movw	r24, r22
+ 552:	03 c0       	rjmp	.+6      	; 0x55a <__stack+0xfb>
+  while ((measure_state != STATE_DONE) && (++i < HIGH_RANGE_TIMEOUT)) {
+    ms_spin(1);
+    
+    /* This value must be checked in every loop */
+    if (BUTTON_PUSHED)
+      return 0;
+ 554:	60 e0       	ldi	r22, 0x00	; 0
+ 556:	70 e0       	ldi	r23, 0x00	; 0
+ 558:	cb 01       	movw	r24, r22
+    rangemode &= ~RANGE_OVERFLOW;
+    
+  measure_state = STATE_IDLE;
+  
+  return ((unsigned long)timer_highword << 16) + TIMER_VALUE;
+}
+ 55a:	df 91       	pop	r29
+ 55c:	cf 91       	pop	r28
+ 55e:	08 95       	ret
+
+00000560 <calc_and_show>:
+   
+   Routine is rather slow
+*/
+
+void calc_and_show(long value)
+{
+ 560:	cf 92       	push	r12
+ 562:	df 92       	push	r13
+ 564:	ef 92       	push	r14
+ 566:	ff 92       	push	r15
+ 568:	0f 93       	push	r16
+ 56a:	1f 93       	push	r17
+ 56c:	6b 01       	movw	r12, r22
+ 56e:	7c 01       	movw	r14, r24
+  unsigned char b;
+  unsigned long l;
+  
+  if (rangemode & RANGE_AUTO)
+ 570:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 574:	82 ff       	sbrs	r24, 2
+ 576:	06 c0       	rjmp	.+12     	; 0x584 <calc_and_show+0x24>
+    lcd_string("Auto ",0);
+ 578:	60 e0       	ldi	r22, 0x00	; 0
+ 57a:	82 ea       	ldi	r24, 0xA2	; 162
+ 57c:	90 e0       	ldi	r25, 0x00	; 0
+ 57e:	0e 94 a0 00 	call	0x140	; 0x140 <lcd_string>
+ 582:	05 c0       	rjmp	.+10     	; 0x58e <calc_and_show+0x2e>
+  else
+    lcd_string("Force",0);
+ 584:	60 e0       	ldi	r22, 0x00	; 0
+ 586:	88 ea       	ldi	r24, 0xA8	; 168
+ 588:	90 e0       	ldi	r25, 0x00	; 0
+ 58a:	0e 94 a0 00 	call	0x140	; 0x140 <lcd_string>
+
+  if (rangemode & RANGE_HIGH) 
+ 58e:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 592:	81 ff       	sbrs	r24, 1
+ 594:	06 c0       	rjmp	.+12     	; 0x5a2 <calc_and_show+0x42>
+    lcd_string(" high",16);
+ 596:	60 e1       	ldi	r22, 0x10	; 16
+ 598:	8e ea       	ldi	r24, 0xAE	; 174
+ 59a:	90 e0       	ldi	r25, 0x00	; 0
+ 59c:	0e 94 a0 00 	call	0x140	; 0x140 <lcd_string>
+ 5a0:	05 c0       	rjmp	.+10     	; 0x5ac <calc_and_show+0x4c>
+  else
+    lcd_string(" low ",16);
+ 5a2:	60 e1       	ldi	r22, 0x10	; 16
+ 5a4:	84 eb       	ldi	r24, 0xB4	; 180
+ 5a6:	90 e0       	ldi	r25, 0x00	; 0
+ 5a8:	0e 94 a0 00 	call	0x140	; 0x140 <lcd_string>
+  
+  if (rangemode & RANGE_OVERFLOW) {
+ 5ac:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 5b0:	83 ff       	sbrs	r24, 3
+ 5b2:	11 c0       	rjmp	.+34     	; 0x5d6 <calc_and_show+0x76>
+    /* Todo - this smarter */
+    lcdbuffer[0] = ' ';
+ 5b4:	e4 e2       	ldi	r30, 0x24	; 36
+ 5b6:	f1 e0       	ldi	r31, 0x01	; 1
+ 5b8:	80 e2       	ldi	r24, 0x20	; 32
+ 5ba:	80 83       	st	Z, r24
+    lcdbuffer[1] = ' ';
+ 5bc:	81 83       	std	Z+1, r24	; 0x01
+    lcdbuffer[2] = ' ';
+ 5be:	82 83       	std	Z+2, r24	; 0x02
+    lcdbuffer[3] = 'E';
+ 5c0:	95 e4       	ldi	r25, 0x45	; 69
+ 5c2:	93 83       	std	Z+3, r25	; 0x03
+    lcdbuffer[4] = 'r';
+ 5c4:	92 e7       	ldi	r25, 0x72	; 114
+ 5c6:	94 83       	std	Z+4, r25	; 0x04
+    lcdbuffer[5] = 'r';
+ 5c8:	95 83       	std	Z+5, r25	; 0x05
+    lcdbuffer[6] = 'o';
+ 5ca:	2f e6       	ldi	r18, 0x6F	; 111
+ 5cc:	26 83       	std	Z+6, r18	; 0x06
+    lcdbuffer[7] = 'r'; 
+ 5ce:	97 83       	std	Z+7, r25	; 0x07
+    lcdbuffer[8] = ' ';
+ 5d0:	80 87       	std	Z+8, r24	; 0x08
+    lcdbuffer[9] = 0;
+ 5d2:	11 86       	std	Z+9, r1	; 0x09
+ 5d4:	6d c0       	rjmp	.+218    	; 0x6b0 <L_dl3566+0x40>
+  }
+  else {
+    /* Select calibration value */
+    b = rangemode & 3;
+  
+    if (calib_offset[b] > value) {
+ 5d6:	83 70       	andi	r24, 0x03	; 3
+ 5d8:	90 e0       	ldi	r25, 0x00	; 0
+ 5da:	fc 01       	movw	r30, r24
+ 5dc:	ee 0f       	add	r30, r30
+ 5de:	ff 1f       	adc	r31, r31
+ 5e0:	ee 0f       	add	r30, r30
+ 5e2:	ff 1f       	adc	r31, r31
+ 5e4:	e0 5f       	subi	r30, 0xF0	; 240
+ 5e6:	fe 4f       	sbci	r31, 0xFE	; 254
+ 5e8:	40 81       	ld	r20, Z
+ 5ea:	51 81       	ldd	r21, Z+1	; 0x01
+ 5ec:	62 81       	ldd	r22, Z+2	; 0x02
+ 5ee:	73 81       	ldd	r23, Z+3	; 0x03
+ 5f0:	c4 16       	cp	r12, r20
+ 5f2:	d5 06       	cpc	r13, r21
+ 5f4:	e6 06       	cpc	r14, r22
+ 5f6:	f7 06       	cpc	r15, r23
+ 5f8:	60 f4       	brcc	.+24     	; 0x612 <calc_and_show+0xb2>
+      lcdbuffer[0] = '-';
+ 5fa:	2d e2       	ldi	r18, 0x2D	; 45
+ 5fc:	20 93 24 01 	sts	0x0124, r18	; 0x800124 <lcdbuffer>
+      value = calib_offset[b] - value;
+ 600:	8a 01       	movw	r16, r20
+ 602:	9b 01       	movw	r18, r22
+ 604:	0c 19       	sub	r16, r12
+ 606:	1d 09       	sbc	r17, r13
+ 608:	2e 09       	sbc	r18, r14
+ 60a:	3f 09       	sbc	r19, r15
+ 60c:	68 01       	movw	r12, r16
+ 60e:	79 01       	movw	r14, r18
+ 610:	07 c0       	rjmp	.+14     	; 0x620 <calc_and_show+0xc0>
+    }
+    else {
+      lcdbuffer[0] = ' ';
+ 612:	20 e2       	ldi	r18, 0x20	; 32
+ 614:	20 93 24 01 	sts	0x0124, r18	; 0x800124 <lcdbuffer>
+      value = value - calib_offset[b];
+ 618:	c4 1a       	sub	r12, r20
+ 61a:	d5 0a       	sbc	r13, r21
+ 61c:	e6 0a       	sbc	r14, r22
+ 61e:	f7 0a       	sbc	r15, r23
+    }
+    
+    MUL_LONG_SHORT_S2(value, calib[b], l);
+ 620:	88 0f       	add	r24, r24
+ 622:	99 1f       	adc	r25, r25
+ 624:	fc 01       	movw	r30, r24
+ 626:	e8 57       	subi	r30, 0x78	; 120
+ 628:	ff 4f       	sbci	r31, 0xFF	; 255
+ 62a:	80 81       	ld	r24, Z
+ 62c:	91 81       	ldd	r25, Z+1	; 0x01
+ 62e:	66 27       	eor	r22, r22
+ 630:	55 27       	eor	r21, r21
+ 632:	44 27       	eor	r20, r20
+ 634:	c8 9e       	mul	r12, r24
+ 636:	71 2d       	mov	r23, r1
+ 638:	c9 9e       	mul	r12, r25
+ 63a:	70 0d       	add	r23, r0
+ 63c:	41 1d       	adc	r20, r1
+ 63e:	56 1f       	adc	r21, r22
+ 640:	d8 9e       	mul	r13, r24
+ 642:	70 0d       	add	r23, r0
+ 644:	41 1d       	adc	r20, r1
+ 646:	56 1f       	adc	r21, r22
+ 648:	d9 9e       	mul	r13, r25
+ 64a:	40 0d       	add	r20, r0
+ 64c:	51 1d       	adc	r21, r1
+ 64e:	66 1f       	adc	r22, r22
+ 650:	e8 9e       	mul	r14, r24
+ 652:	40 0d       	add	r20, r0
+ 654:	51 1d       	adc	r21, r1
+ 656:	08 f4       	brcc	.+2      	; 0x65a <L_dl1566>
+ 658:	63 95       	inc	r22
+
+0000065a <L_dl1566>:
+ 65a:	77 27       	eor	r23, r23
+ 65c:	e9 9e       	mul	r14, r25
+ 65e:	50 0d       	add	r21, r0
+ 660:	61 1d       	adc	r22, r1
+ 662:	08 f4       	brcc	.+2      	; 0x666 <L_dl2566>
+ 664:	73 95       	inc	r23
+
+00000666 <L_dl2566>:
+ 666:	f8 9e       	mul	r15, r24
+ 668:	50 0d       	add	r21, r0
+ 66a:	61 1d       	adc	r22, r1
+ 66c:	08 f4       	brcc	.+2      	; 0x670 <L_dl3566>
+ 66e:	73 95       	inc	r23
+
+00000670 <L_dl3566>:
+ 670:	f9 9e       	mul	r15, r25
+ 672:	60 0d       	add	r22, r0
+ 674:	71 1d       	adc	r23, r1
+ 676:	11 24       	eor	r1, r1
+    
+    b = long2ascii(lcdbuffer+1, l);
+ 678:	85 e2       	ldi	r24, 0x25	; 37
+ 67a:	91 e0       	ldi	r25, 0x01	; 1
+ 67c:	0e 94 d1 00 	call	0x1a2	; 0x1a2 <long2ascii>
+    
+    /* High range shifts 1E3 */
+    if (rangemode & RANGE_HIGH)
+ 680:	90 91 9c 00 	lds	r25, 0x009C	; 0x80009c <rangemode>
+ 684:	91 fd       	sbrc	r25, 1
+      b++;
+ 686:	8f 5f       	subi	r24, 0xFF	; 255
+    
+    lcdbuffer[6] = ' ';
+ 688:	a4 e2       	ldi	r26, 0x24	; 36
+ 68a:	b1 e0       	ldi	r27, 0x01	; 1
+ 68c:	90 e2       	ldi	r25, 0x20	; 32
+ 68e:	16 96       	adiw	r26, 0x06	; 6
+ 690:	9c 93       	st	X, r25
+ 692:	16 97       	sbiw	r26, 0x06	; 6
+    lcdbuffer[7] = decades[b];  /* range = 1 shifts 1E3 */
+ 694:	e8 2f       	mov	r30, r24
+ 696:	f0 e0       	ldi	r31, 0x00	; 0
+ 698:	e3 56       	subi	r30, 0x63	; 99
+ 69a:	ff 4f       	sbci	r31, 0xFF	; 255
+ 69c:	80 81       	ld	r24, Z
+ 69e:	17 96       	adiw	r26, 0x07	; 7
+ 6a0:	8c 93       	st	X, r24
+ 6a2:	17 97       	sbiw	r26, 0x07	; 7
+    lcdbuffer[8] = 'F';
+ 6a4:	86 e4       	ldi	r24, 0x46	; 70
+ 6a6:	18 96       	adiw	r26, 0x08	; 8
+ 6a8:	8c 93       	st	X, r24
+ 6aa:	18 97       	sbiw	r26, 0x08	; 8
+    lcdbuffer[9] = 0;
+ 6ac:	19 96       	adiw	r26, 0x09	; 9
+ 6ae:	1c 92       	st	X, r1
+  }
+    
+  /* Write high threshold in first line, low threshold in second */
+  if (rangemode & RANGE_HIGH_THRESH)
+ 6b0:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 6b4:	80 fd       	sbrc	r24, 0
+ 6b6:	02 c0       	rjmp	.+4      	; 0x6bc <L_dl3566+0x4c>
+    b=7;
+  else
+    b=23;
+ 6b8:	67 e1       	ldi	r22, 0x17	; 23
+ 6ba:	01 c0       	rjmp	.+2      	; 0x6be <L_dl3566+0x4e>
+    lcdbuffer[9] = 0;
+  }
+    
+  /* Write high threshold in first line, low threshold in second */
+  if (rangemode & RANGE_HIGH_THRESH)
+    b=7;
+ 6bc:	67 e0       	ldi	r22, 0x07	; 7
+  else
+    b=23;
+  
+  lcd_string(lcdbuffer,b);
+ 6be:	84 e2       	ldi	r24, 0x24	; 36
+ 6c0:	91 e0       	ldi	r25, 0x01	; 1
+ 6c2:	0e 94 a0 00 	call	0x140	; 0x140 <lcd_string>
+}
+ 6c6:	1f 91       	pop	r17
+ 6c8:	0f 91       	pop	r16
+ 6ca:	ff 90       	pop	r15
+ 6cc:	ef 90       	pop	r14
+ 6ce:	df 90       	pop	r13
+ 6d0:	cf 90       	pop	r12
+ 6d2:	08 95       	ret
+
+000006d4 <calibrate_zero>:
+
+void calibrate_zero(void)
+{
+ 6d4:	cf 93       	push	r28
+  char oldrange = rangemode;
+ 6d6:	c0 91 9c 00 	lds	r28, 0x009C	; 0x80009c <rangemode>
+  unsigned long l;
+  
+  rangemode = 0;
+ 6da:	10 92 9c 00 	sts	0x009C, r1	; 0x80009c <rangemode>
+ 
+  l = measure();
+ 6de:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  l = measure();
+ 6e2:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  
+  calib_offset[rangemode] = l;
+ 6e6:	e0 91 9c 00 	lds	r30, 0x009C	; 0x80009c <rangemode>
+ 6ea:	f0 e0       	ldi	r31, 0x00	; 0
+ 6ec:	ee 0f       	add	r30, r30
+ 6ee:	ff 1f       	adc	r31, r31
+ 6f0:	ee 0f       	add	r30, r30
+ 6f2:	ff 1f       	adc	r31, r31
+ 6f4:	e0 5f       	subi	r30, 0xF0	; 240
+ 6f6:	fe 4f       	sbci	r31, 0xFE	; 254
+ 6f8:	60 83       	st	Z, r22
+ 6fa:	71 83       	std	Z+1, r23	; 0x01
+ 6fc:	82 83       	std	Z+2, r24	; 0x02
+ 6fe:	93 83       	std	Z+3, r25	; 0x03
+  
+  rangemode = RANGE_HIGH_THRESH;
+ 700:	81 e0       	ldi	r24, 0x01	; 1
+ 702:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+ 
+  l = measure();
+ 706:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  l = measure();
+ 70a:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  
+  calib_offset[rangemode] = l;
+ 70e:	e0 91 9c 00 	lds	r30, 0x009C	; 0x80009c <rangemode>
+ 712:	f0 e0       	ldi	r31, 0x00	; 0
+ 714:	ee 0f       	add	r30, r30
+ 716:	ff 1f       	adc	r31, r31
+ 718:	ee 0f       	add	r30, r30
+ 71a:	ff 1f       	adc	r31, r31
+ 71c:	e0 5f       	subi	r30, 0xF0	; 240
+ 71e:	fe 4f       	sbci	r31, 0xFE	; 254
+ 720:	60 83       	st	Z, r22
+ 722:	71 83       	std	Z+1, r23	; 0x01
+ 724:	82 83       	std	Z+2, r24	; 0x02
+ 726:	93 83       	std	Z+3, r25	; 0x03
+  
+  rangemode = oldrange;
+ 728:	c0 93 9c 00 	sts	0x009C, r28	; 0x80009c <rangemode>
+  
+}
+ 72c:	cf 91       	pop	r28
+ 72e:	08 95       	ret
+
+00000730 <calibrate>:
+
+void calibrate(void)
+{
+ 730:	8f 92       	push	r8
+ 732:	9f 92       	push	r9
+ 734:	af 92       	push	r10
+ 736:	bf 92       	push	r11
+ 738:	cf 92       	push	r12
+ 73a:	df 92       	push	r13
+ 73c:	ef 92       	push	r14
+ 73e:	ff 92       	push	r15
+ 740:	1f 93       	push	r17
+ 742:	cf 93       	push	r28
+ 744:	df 93       	push	r29
+  char oldrange = rangemode;
+ 746:	10 91 9c 00 	lds	r17, 0x009C	; 0x80009c <rangemode>
+  unsigned long value;
+  
+  rangemode = 0;
+ 74a:	10 92 9c 00 	sts	0x009C, r1	; 0x80009c <rangemode>
+  value = measure();
+ 74e:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  value -= calib_offset[rangemode];
+ 752:	20 91 9c 00 	lds	r18, 0x009C	; 0x80009c <rangemode>
+ 756:	30 e0       	ldi	r19, 0x00	; 0
+  calib[rangemode] = CALIB_LOW / (value>>8) + 1;
+ 758:	e9 01       	movw	r28, r18
+ 75a:	cc 0f       	add	r28, r28
+ 75c:	dd 1f       	adc	r29, r29
+ 75e:	c8 57       	subi	r28, 0x78	; 120
+ 760:	df 4f       	sbci	r29, 0xFF	; 255
+  char oldrange = rangemode;
+  unsigned long value;
+  
+  rangemode = 0;
+  value = measure();
+  value -= calib_offset[rangemode];
+ 762:	22 0f       	add	r18, r18
+ 764:	33 1f       	adc	r19, r19
+ 766:	22 0f       	add	r18, r18
+ 768:	33 1f       	adc	r19, r19
+ 76a:	f9 01       	movw	r30, r18
+ 76c:	e0 5f       	subi	r30, 0xF0	; 240
+ 76e:	fe 4f       	sbci	r31, 0xFE	; 254
+  calib[rangemode] = CALIB_LOW / (value>>8) + 1;
+ 770:	c0 80       	ld	r12, Z
+ 772:	d1 80       	ldd	r13, Z+1	; 0x01
+ 774:	e2 80       	ldd	r14, Z+2	; 0x02
+ 776:	f3 80       	ldd	r15, Z+3	; 0x03
+ 778:	dc 01       	movw	r26, r24
+ 77a:	cb 01       	movw	r24, r22
+ 77c:	8c 19       	sub	r24, r12
+ 77e:	9d 09       	sbc	r25, r13
+ 780:	ae 09       	sbc	r26, r14
+ 782:	bf 09       	sbc	r27, r15
+ 784:	29 2f       	mov	r18, r25
+ 786:	3a 2f       	mov	r19, r26
+ 788:	4b 2f       	mov	r20, r27
+ 78a:	55 27       	eor	r21, r21
+ 78c:	0f 2e       	mov	r0, r31
+ 78e:	c1 2c       	mov	r12, r1
+ 790:	f0 e4       	ldi	r31, 0x40	; 64
+ 792:	df 2e       	mov	r13, r31
+ 794:	f2 e4       	ldi	r31, 0x42	; 66
+ 796:	ef 2e       	mov	r14, r31
+ 798:	ff e0       	ldi	r31, 0x0F	; 15
+ 79a:	ff 2e       	mov	r15, r31
+ 79c:	f0 2d       	mov	r31, r0
+ 79e:	c7 01       	movw	r24, r14
+ 7a0:	b6 01       	movw	r22, r12
+ 7a2:	0e 94 ff 04 	call	0x9fe	; 0x9fe <__udivmodsi4>
+ 7a6:	2f 5f       	subi	r18, 0xFF	; 255
+ 7a8:	3f 4f       	sbci	r19, 0xFF	; 255
+ 7aa:	39 83       	std	Y+1, r19	; 0x01
+ 7ac:	28 83       	st	Y, r18
+
+  rangemode = RANGE_HIGH_THRESH;
+ 7ae:	81 e0       	ldi	r24, 0x01	; 1
+ 7b0:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+  value = measure();
+ 7b4:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  value -= calib_offset[rangemode];
+ 7b8:	20 91 9c 00 	lds	r18, 0x009C	; 0x80009c <rangemode>
+ 7bc:	30 e0       	ldi	r19, 0x00	; 0
+  calib[rangemode] = CALIB_LOW / (value>>8) + 1;
+ 7be:	e9 01       	movw	r28, r18
+ 7c0:	cc 0f       	add	r28, r28
+ 7c2:	dd 1f       	adc	r29, r29
+ 7c4:	c8 57       	subi	r28, 0x78	; 120
+ 7c6:	df 4f       	sbci	r29, 0xFF	; 255
+  value -= calib_offset[rangemode];
+  calib[rangemode] = CALIB_LOW / (value>>8) + 1;
+
+  rangemode = RANGE_HIGH_THRESH;
+  value = measure();
+  value -= calib_offset[rangemode];
+ 7c8:	22 0f       	add	r18, r18
+ 7ca:	33 1f       	adc	r19, r19
+ 7cc:	22 0f       	add	r18, r18
+ 7ce:	33 1f       	adc	r19, r19
+ 7d0:	f9 01       	movw	r30, r18
+ 7d2:	e0 5f       	subi	r30, 0xF0	; 240
+ 7d4:	fe 4f       	sbci	r31, 0xFE	; 254
+  calib[rangemode] = CALIB_LOW / (value>>8) + 1;
+ 7d6:	80 80       	ld	r8, Z
+ 7d8:	91 80       	ldd	r9, Z+1	; 0x01
+ 7da:	a2 80       	ldd	r10, Z+2	; 0x02
+ 7dc:	b3 80       	ldd	r11, Z+3	; 0x03
+ 7de:	dc 01       	movw	r26, r24
+ 7e0:	cb 01       	movw	r24, r22
+ 7e2:	88 19       	sub	r24, r8
+ 7e4:	99 09       	sbc	r25, r9
+ 7e6:	aa 09       	sbc	r26, r10
+ 7e8:	bb 09       	sbc	r27, r11
+ 7ea:	29 2f       	mov	r18, r25
+ 7ec:	3a 2f       	mov	r19, r26
+ 7ee:	4b 2f       	mov	r20, r27
+ 7f0:	55 27       	eor	r21, r21
+ 7f2:	c7 01       	movw	r24, r14
+ 7f4:	b6 01       	movw	r22, r12
+ 7f6:	0e 94 ff 04 	call	0x9fe	; 0x9fe <__udivmodsi4>
+ 7fa:	2f 5f       	subi	r18, 0xFF	; 255
+ 7fc:	3f 4f       	sbci	r19, 0xFF	; 255
+ 7fe:	39 83       	std	Y+1, r19	; 0x01
+ 800:	28 83       	st	Y, r18
+  
+  rangemode = RANGE_HIGH;
+ 802:	82 e0       	ldi	r24, 0x02	; 2
+ 804:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+  value = measure();
+ 808:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  value -= calib_offset[rangemode];
+ 80c:	20 91 9c 00 	lds	r18, 0x009C	; 0x80009c <rangemode>
+ 810:	30 e0       	ldi	r19, 0x00	; 0
+  calib[rangemode] = CALIB_HIGH / value + 1;
+ 812:	e9 01       	movw	r28, r18
+ 814:	cc 0f       	add	r28, r28
+ 816:	dd 1f       	adc	r29, r29
+ 818:	c8 57       	subi	r28, 0x78	; 120
+ 81a:	df 4f       	sbci	r29, 0xFF	; 255
+  value -= calib_offset[rangemode];
+  calib[rangemode] = CALIB_LOW / (value>>8) + 1;
+  
+  rangemode = RANGE_HIGH;
+  value = measure();
+  value -= calib_offset[rangemode];
+ 81c:	22 0f       	add	r18, r18
+ 81e:	33 1f       	adc	r19, r19
+ 820:	22 0f       	add	r18, r18
+ 822:	33 1f       	adc	r19, r19
+ 824:	f9 01       	movw	r30, r18
+ 826:	e0 5f       	subi	r30, 0xF0	; 240
+ 828:	fe 4f       	sbci	r31, 0xFE	; 254
+  calib[rangemode] = CALIB_HIGH / value + 1;
+ 82a:	c0 80       	ld	r12, Z
+ 82c:	d1 80       	ldd	r13, Z+1	; 0x01
+ 82e:	e2 80       	ldd	r14, Z+2	; 0x02
+ 830:	f3 80       	ldd	r15, Z+3	; 0x03
+ 832:	9b 01       	movw	r18, r22
+ 834:	ac 01       	movw	r20, r24
+ 836:	2c 19       	sub	r18, r12
+ 838:	3d 09       	sbc	r19, r13
+ 83a:	4e 09       	sbc	r20, r14
+ 83c:	5f 09       	sbc	r21, r15
+ 83e:	0f 2e       	mov	r0, r31
+ 840:	c1 2c       	mov	r12, r1
+ 842:	d1 2c       	mov	r13, r1
+ 844:	f8 ee       	ldi	r31, 0xE8	; 232
+ 846:	ef 2e       	mov	r14, r31
+ 848:	f3 e0       	ldi	r31, 0x03	; 3
+ 84a:	ff 2e       	mov	r15, r31
+ 84c:	f0 2d       	mov	r31, r0
+ 84e:	c7 01       	movw	r24, r14
+ 850:	b6 01       	movw	r22, r12
+ 852:	0e 94 ff 04 	call	0x9fe	; 0x9fe <__udivmodsi4>
+ 856:	2f 5f       	subi	r18, 0xFF	; 255
+ 858:	3f 4f       	sbci	r19, 0xFF	; 255
+ 85a:	39 83       	std	Y+1, r19	; 0x01
+ 85c:	28 83       	st	Y, r18
+ 
+  rangemode = RANGE_HIGH | RANGE_HIGH_THRESH;
+ 85e:	83 e0       	ldi	r24, 0x03	; 3
+ 860:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+  value = measure();
+ 864:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+  value -= calib_offset[rangemode];
+ 868:	20 91 9c 00 	lds	r18, 0x009C	; 0x80009c <rangemode>
+ 86c:	30 e0       	ldi	r19, 0x00	; 0
+  calib[rangemode] = CALIB_HIGH / value + 1;
+ 86e:	e9 01       	movw	r28, r18
+ 870:	cc 0f       	add	r28, r28
+ 872:	dd 1f       	adc	r29, r29
+ 874:	c8 57       	subi	r28, 0x78	; 120
+ 876:	df 4f       	sbci	r29, 0xFF	; 255
+  value -= calib_offset[rangemode];
+  calib[rangemode] = CALIB_HIGH / value + 1;
+ 
+  rangemode = RANGE_HIGH | RANGE_HIGH_THRESH;
+  value = measure();
+  value -= calib_offset[rangemode];
+ 878:	22 0f       	add	r18, r18
+ 87a:	33 1f       	adc	r19, r19
+ 87c:	22 0f       	add	r18, r18
+ 87e:	33 1f       	adc	r19, r19
+ 880:	f9 01       	movw	r30, r18
+ 882:	e0 5f       	subi	r30, 0xF0	; 240
+ 884:	fe 4f       	sbci	r31, 0xFE	; 254
+  calib[rangemode] = CALIB_HIGH / value + 1;
+ 886:	80 80       	ld	r8, Z
+ 888:	91 80       	ldd	r9, Z+1	; 0x01
+ 88a:	a2 80       	ldd	r10, Z+2	; 0x02
+ 88c:	b3 80       	ldd	r11, Z+3	; 0x03
+ 88e:	9b 01       	movw	r18, r22
+ 890:	ac 01       	movw	r20, r24
+ 892:	28 19       	sub	r18, r8
+ 894:	39 09       	sbc	r19, r9
+ 896:	4a 09       	sbc	r20, r10
+ 898:	5b 09       	sbc	r21, r11
+ 89a:	c7 01       	movw	r24, r14
+ 89c:	b6 01       	movw	r22, r12
+ 89e:	0e 94 ff 04 	call	0x9fe	; 0x9fe <__udivmodsi4>
+ 8a2:	2f 5f       	subi	r18, 0xFF	; 255
+ 8a4:	3f 4f       	sbci	r19, 0xFF	; 255
+ 8a6:	39 83       	std	Y+1, r19	; 0x01
+ 8a8:	28 83       	st	Y, r18
+ 
+  rangemode = oldrange;
+ 8aa:	10 93 9c 00 	sts	0x009C, r17	; 0x80009c <rangemode>
+  
+}
+ 8ae:	df 91       	pop	r29
+ 8b0:	cf 91       	pop	r28
+ 8b2:	1f 91       	pop	r17
+ 8b4:	ff 90       	pop	r15
+ 8b6:	ef 90       	pop	r14
+ 8b8:	df 90       	pop	r13
+ 8ba:	cf 90       	pop	r12
+ 8bc:	bf 90       	pop	r11
+ 8be:	af 90       	pop	r10
+ 8c0:	9f 90       	pop	r9
+ 8c2:	8f 90       	pop	r8
+ 8c4:	08 95       	ret
+
+000008c6 <menu>:
+
+/* Hold-down-button menu implementation: */
+  
+char menu(void)
+{
+ 8c6:	0f 93       	push	r16
+ 8c8:	1f 93       	push	r17
+ 8ca:	cf 93       	push	r28
+  unsigned char i;
+  
+  lcd_clear();
+ 8cc:	0e 94 9b 00 	call	0x136	; 0x136 <lcd_clear>
+ 8d0:	00 e9       	ldi	r16, 0x90	; 144
+ 8d2:	10 e0       	ldi	r17, 0x00	; 0
+  
+  for (i=0; i<MENU_ITEMS; i++) {
+ 8d4:	c0 e0       	ldi	r28, 0x00	; 0
+    lcd_string(menu_item[i],0);
+ 8d6:	60 e0       	ldi	r22, 0x00	; 0
+ 8d8:	f8 01       	movw	r30, r16
+ 8da:	81 91       	ld	r24, Z+
+ 8dc:	91 91       	ld	r25, Z+
+ 8de:	8f 01       	movw	r16, r30
+ 8e0:	0e 94 a0 00 	call	0x140	; 0x140 <lcd_string>
+    ms_spin(MENU_SPEED);
+ 8e4:	80 e2       	ldi	r24, 0x20	; 32
+ 8e6:	93 e0       	ldi	r25, 0x03	; 3
+ 8e8:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+    
+    if (!BUTTON_PUSHED)
+ 8ec:	82 99       	sbic	0x10, 2	; 16
+ 8ee:	04 c0       	rjmp	.+8      	; 0x8f8 <menu+0x32>
+{
+  unsigned char i;
+  
+  lcd_clear();
+  
+  for (i=0; i<MENU_ITEMS; i++) {
+ 8f0:	cf 5f       	subi	r28, 0xFF	; 255
+ 8f2:	c6 30       	cpi	r28, 0x06	; 6
+ 8f4:	81 f7       	brne	.-32     	; 0x8d6 <menu+0x10>
+ 8f6:	02 c0       	rjmp	.+4      	; 0x8fc <menu+0x36>
+    if (!BUTTON_PUSHED)
+      break;
+    
+  }
+  
+  if (i == MENU_ITEMS) {
+ 8f8:	c6 30       	cpi	r28, 0x06	; 6
+ 8fa:	49 f4       	brne	.+18     	; 0x90e <menu+0x48>
+    /* Just clear display, if user went out of menu */
+    lcd_clear();
+ 8fc:	0e 94 9b 00 	call	0x136	; 0x136 <lcd_clear>
+    
+    /* Wait for release of button */
+    while (BUTTON_PUSHED);
+ 900:	82 9b       	sbis	0x10, 2	; 16
+ 902:	fe cf       	rjmp	.-4      	; 0x900 <menu+0x3a>
+    ms_spin(10);
+ 904:	8a e0       	ldi	r24, 0x0A	; 10
+ 906:	90 e0       	ldi	r25, 0x00	; 0
+ 908:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+ 90c:	1b c0       	rjmp	.+54     	; 0x944 <menu+0x7e>
+   
+  }
+  else {
+    /* Flash selected item */
+    lcd_clear();  
+ 90e:	0e 94 9b 00 	call	0x136	; 0x136 <lcd_clear>
+    ms_spin(MENU_SPEED >> 2);
+ 912:	88 ec       	ldi	r24, 0xC8	; 200
+ 914:	90 e0       	ldi	r25, 0x00	; 0
+ 916:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+    lcd_string(menu_item[i],0);
+ 91a:	ec 2f       	mov	r30, r28
+ 91c:	f0 e0       	ldi	r31, 0x00	; 0
+ 91e:	ee 0f       	add	r30, r30
+ 920:	ff 1f       	adc	r31, r31
+ 922:	e0 57       	subi	r30, 0x70	; 112
+ 924:	ff 4f       	sbci	r31, 0xFF	; 255
+ 926:	60 e0       	ldi	r22, 0x00	; 0
+ 928:	80 81       	ld	r24, Z
+ 92a:	91 81       	ldd	r25, Z+1	; 0x01
+ 92c:	0e 94 a0 00 	call	0x140	; 0x140 <lcd_string>
+    ms_spin(MENU_SPEED >> 1);
+ 930:	80 e9       	ldi	r24, 0x90	; 144
+ 932:	91 e0       	ldi	r25, 0x01	; 1
+ 934:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+    lcd_clear();
+ 938:	0e 94 9b 00 	call	0x136	; 0x136 <lcd_clear>
+    ms_spin(MENU_SPEED >> 2);
+ 93c:	88 ec       	ldi	r24, 0xC8	; 200
+ 93e:	90 e0       	ldi	r25, 0x00	; 0
+ 940:	0e 94 49 00 	call	0x92	; 0x92 <ms_spin>
+    
+  }
+  
+  return i;
+}
+ 944:	8c 2f       	mov	r24, r28
+ 946:	cf 91       	pop	r28
+ 948:	1f 91       	pop	r17
+ 94a:	0f 91       	pop	r16
+ 94c:	08 95       	ret
+
+0000094e <init>:
+
+void init(void)
+{
+  
+  /* Set datadirections */
+  DDRD = (1<<4); /* led output, rest input */
+ 94e:	80 e1       	ldi	r24, 0x10	; 16
+ 950:	81 bb       	out	0x11, r24	; 17
+  PORTD &= ~(1<<6); /* AIN0 port must be 0 */
+ 952:	96 98       	cbi	0x12, 6	; 18
+  
+  /* Enable button pull up resistor */
+  PORTD |= (1<<2);
+ 954:	92 9a       	sbi	0x12, 2	; 18
+  
+  /* Setup timer1 to normal operation */
+  TCCR1A = 0;
+ 956:	1f bc       	out	0x2f, r1	; 47
+  TCCR1B = 0;
+ 958:	1e bc       	out	0x2e, r1	; 46
+  TIMSK = (1<<TOIE1); //(mega8)
+ 95a:	84 e0       	ldi	r24, 0x04	; 4
+ 95c:	89 bf       	out	0x39, r24	; 57
+  //TIMSK1 = (1<<TOIE1); //(mega48/88/168)
+  
+  
+  /* Setup analog comperator to generate rising edge interrupt */
+  ACSR = (1<<ACIS0)|(1<<ACIS1)|(1<<ACIE);
+ 95e:	8b e0       	ldi	r24, 0x0B	; 11
+ 960:	88 b9       	out	0x08, r24	; 8
+  
+  /* Setup analog comperator to use ADMUX */
+  ADMUX = ADMUX_LOW;
+ 962:	81 e0       	ldi	r24, 0x01	; 1
+ 964:	87 b9       	out	0x07, r24	; 7
+  SFIOR |= (1<<ACME);
+ 966:	80 b7       	in	r24, 0x30	; 48
+ 968:	88 60       	ori	r24, 0x08	; 8
+ 96a:	80 bf       	out	0x30, r24	; 48
+ 96c:	08 95       	ret
+
+0000096e <main>:
+
+int main(void)
+{
+  unsigned long l;
+  
+  init(); //init peripherals/adc/timers/etc.. 
+ 96e:	0e 94 a7 04 	call	0x94e	; 0x94e <init>
+  
+	lcd_init(); //init lcd display
+ 972:	0e 94 77 00 	call	0xee	; 0xee <lcd_init>
+  
+	eeprom_read(); //reads calibration values or settings from EEPROM.
+ 976:	0e 94 ca 01 	call	0x394	; 0x394 <eeprom_read>
+	 
+  asm("sei"); //enables global interrupts 
+ 97a:	78 94       	sei
+  
+  LED_OFF; //turns off an LED (probably an indicator for measurement status).
+ 97c:	94 9a       	sbi	0x12, 4	; 18
+      
+  rangemode = RANGE_AUTO; //setting Up the Measurement Mode
+ 97e:	84 e0       	ldi	r24, 0x04	; 4
+ 980:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+  
+  while (1) {
+    /* Toggle high/low threshold */
+    rangemode ^= RANGE_HIGH_THRESH;
+ 984:	c1 e0       	ldi	r28, 0x01	; 1
+ 986:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 98a:	8c 27       	eor	r24, r28
+ 98c:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+    l = measure();
+ 990:	0e 94 02 02 	call	0x404	; 0x404 <measure>
+    if (BUTTON_PUSHED) {
+ 994:	82 99       	sbic	0x10, 2	; 16
+ 996:	30 c0       	rjmp	.+96     	; 0x9f8 <main+0x8a>
+      /* Stop any cap. charging */
+      LED_OFF;
+ 998:	94 9a       	sbi	0x12, 4	; 18
+      LOW_RANGE;
+ 99a:	8d 98       	cbi	0x11, 5	; 17
+ 99c:	95 98       	cbi	0x12, 5	; 18
+      DISCHARGE_ON;
+ 99e:	8e 9a       	sbi	0x11, 6	; 17
+      
+      /* Menu implementation */
+      switch(menu()) {
+ 9a0:	0e 94 63 04 	call	0x8c6	; 0x8c6 <menu>
+ 9a4:	82 30       	cpi	r24, 0x02	; 2
+ 9a6:	c1 f0       	breq	.+48     	; 0x9d8 <main+0x6a>
+ 9a8:	28 f4       	brcc	.+10     	; 0x9b4 <main+0x46>
+ 9aa:	88 23       	and	r24, r24
+ 9ac:	49 f0       	breq	.+18     	; 0x9c0 <main+0x52>
+ 9ae:	81 30       	cpi	r24, 0x01	; 1
+ 9b0:	69 f0       	breq	.+26     	; 0x9cc <main+0x5e>
+ 9b2:	e9 cf       	rjmp	.-46     	; 0x986 <main+0x18>
+ 9b4:	84 30       	cpi	r24, 0x04	; 4
+ 9b6:	d1 f0       	breq	.+52     	; 0x9ec <main+0x7e>
+ 9b8:	b0 f0       	brcs	.+44     	; 0x9e6 <main+0x78>
+ 9ba:	85 30       	cpi	r24, 0x05	; 5
+ 9bc:	d1 f0       	breq	.+52     	; 0x9f2 <main+0x84>
+ 9be:	e3 cf       	rjmp	.-58     	; 0x986 <main+0x18>
+      case 0: /* auto range */
+        rangemode |= RANGE_AUTO;
+ 9c0:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 9c4:	84 60       	ori	r24, 0x04	; 4
+ 9c6:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+        break; 
+ 9ca:	dd cf       	rjmp	.-70     	; 0x986 <main+0x18>
+      case 1: /* low range */
+        rangemode &= ~(RANGE_AUTO | RANGE_HIGH);
+ 9cc:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 9d0:	89 7f       	andi	r24, 0xF9	; 249
+ 9d2:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+        break;  
+ 9d6:	d7 cf       	rjmp	.-82     	; 0x986 <main+0x18>
+      case 2: /* high range */
+        rangemode &= ~RANGE_AUTO;
+        rangemode |= RANGE_HIGH;
+ 9d8:	80 91 9c 00 	lds	r24, 0x009C	; 0x80009c <rangemode>
+ 9dc:	8b 7f       	andi	r24, 0xFB	; 251
+ 9de:	82 60       	ori	r24, 0x02	; 2
+ 9e0:	80 93 9c 00 	sts	0x009C, r24	; 0x80009c <rangemode>
+        break;  
+ 9e4:	d0 cf       	rjmp	.-96     	; 0x986 <main+0x18>
+      case 3: 
+        calibrate_zero();
+ 9e6:	0e 94 6a 03 	call	0x6d4	; 0x6d4 <calibrate_zero>
+        break;  
+ 9ea:	cd cf       	rjmp	.-102    	; 0x986 <main+0x18>
+      case 4: 
+        calibrate();
+ 9ec:	0e 94 98 03 	call	0x730	; 0x730 <calibrate>
+        break;  
+ 9f0:	ca cf       	rjmp	.-108    	; 0x986 <main+0x18>
+      case 5: 
+        eeprom_write();
+ 9f2:	0e 94 e7 01 	call	0x3ce	; 0x3ce <eeprom_write>
+        break;  
+ 9f6:	c7 cf       	rjmp	.-114    	; 0x986 <main+0x18>
+      }
+      
+    }
+    else
+      calc_and_show(l);
+ 9f8:	0e 94 b0 02 	call	0x560	; 0x560 <calc_and_show>
+ 9fc:	c4 cf       	rjmp	.-120    	; 0x986 <main+0x18>
+
+000009fe <__udivmodsi4>:
+ 9fe:	a1 e2       	ldi	r26, 0x21	; 33
+ a00:	1a 2e       	mov	r1, r26
+ a02:	aa 1b       	sub	r26, r26
+ a04:	bb 1b       	sub	r27, r27
+ a06:	fd 01       	movw	r30, r26
+ a08:	0d c0       	rjmp	.+26     	; 0xa24 <__udivmodsi4_ep>
+
+00000a0a <__udivmodsi4_loop>:
+ a0a:	aa 1f       	adc	r26, r26
+ a0c:	bb 1f       	adc	r27, r27
+ a0e:	ee 1f       	adc	r30, r30
+ a10:	ff 1f       	adc	r31, r31
+ a12:	a2 17       	cp	r26, r18
+ a14:	b3 07       	cpc	r27, r19
+ a16:	e4 07       	cpc	r30, r20
+ a18:	f5 07       	cpc	r31, r21
+ a1a:	20 f0       	brcs	.+8      	; 0xa24 <__udivmodsi4_ep>
+ a1c:	a2 1b       	sub	r26, r18
+ a1e:	b3 0b       	sbc	r27, r19
+ a20:	e4 0b       	sbc	r30, r20
+ a22:	f5 0b       	sbc	r31, r21
+
+00000a24 <__udivmodsi4_ep>:
+ a24:	66 1f       	adc	r22, r22
+ a26:	77 1f       	adc	r23, r23
+ a28:	88 1f       	adc	r24, r24
+ a2a:	99 1f       	adc	r25, r25
+ a2c:	1a 94       	dec	r1
+ a2e:	69 f7       	brne	.-38     	; 0xa0a <__udivmodsi4_loop>
+ a30:	60 95       	com	r22
+ a32:	70 95       	com	r23
+ a34:	80 95       	com	r24
+ a36:	90 95       	com	r25
+ a38:	9b 01       	movw	r18, r22
+ a3a:	ac 01       	movw	r20, r24
+ a3c:	bd 01       	movw	r22, r26
+ a3e:	cf 01       	movw	r24, r30
+ a40:	08 95       	ret
+
+00000a42 <eeprom_read_block>:
+ a42:	dc 01       	movw	r26, r24
+ a44:	cb 01       	movw	r24, r22
+
+00000a46 <eeprom_read_blraw>:
+ a46:	fc 01       	movw	r30, r24
+ a48:	e1 99       	sbic	0x1c, 1	; 28
+ a4a:	fe cf       	rjmp	.-4      	; 0xa48 <eeprom_read_blraw+0x2>
+ a4c:	06 c0       	rjmp	.+12     	; 0xa5a <eeprom_read_blraw+0x14>
+ a4e:	ff bb       	out	0x1f, r31	; 31
+ a50:	ee bb       	out	0x1e, r30	; 30
+ a52:	e0 9a       	sbi	0x1c, 0	; 28
+ a54:	31 96       	adiw	r30, 0x01	; 1
+ a56:	0d b2       	in	r0, 0x1d	; 29
+ a58:	0d 92       	st	X+, r0
+ a5a:	41 50       	subi	r20, 0x01	; 1
+ a5c:	50 40       	sbci	r21, 0x00	; 0
+ a5e:	b8 f7       	brcc	.-18     	; 0xa4e <eeprom_read_blraw+0x8>
+ a60:	08 95       	ret
+
+00000a62 <eeprom_read_byte>:
+ a62:	e1 99       	sbic	0x1c, 1	; 28
+ a64:	fe cf       	rjmp	.-4      	; 0xa62 <eeprom_read_byte>
+ a66:	9f bb       	out	0x1f, r25	; 31
+ a68:	8e bb       	out	0x1e, r24	; 30
+ a6a:	e0 9a       	sbi	0x1c, 0	; 28
+ a6c:	99 27       	eor	r25, r25
+ a6e:	8d b3       	in	r24, 0x1d	; 29
+ a70:	08 95       	ret
+
+00000a72 <eeprom_write_block>:
+ a72:	dc 01       	movw	r26, r24
+ a74:	cb 01       	movw	r24, r22
+ a76:	03 c0       	rjmp	.+6      	; 0xa7e <eeprom_write_block+0xc>
+ a78:	2d 91       	ld	r18, X+
+ a7a:	0e 94 44 05 	call	0xa88	; 0xa88 <eeprom_write_r18>
+ a7e:	41 50       	subi	r20, 0x01	; 1
+ a80:	50 40       	sbci	r21, 0x00	; 0
+ a82:	d0 f7       	brcc	.-12     	; 0xa78 <eeprom_write_block+0x6>
+ a84:	08 95       	ret
+
+00000a86 <eeprom_write_byte>:
+ a86:	26 2f       	mov	r18, r22
+
+00000a88 <eeprom_write_r18>:
+ a88:	e1 99       	sbic	0x1c, 1	; 28
+ a8a:	fe cf       	rjmp	.-4      	; 0xa88 <eeprom_write_r18>
+ a8c:	9f bb       	out	0x1f, r25	; 31
+ a8e:	8e bb       	out	0x1e, r24	; 30
+ a90:	2d bb       	out	0x1d, r18	; 29
+ a92:	0f b6       	in	r0, 0x3f	; 63
+ a94:	f8 94       	cli
+ a96:	e2 9a       	sbi	0x1c, 2	; 28
+ a98:	e1 9a       	sbi	0x1c, 1	; 28
+ a9a:	0f be       	out	0x3f, r0	; 63
+ a9c:	01 96       	adiw	r24, 0x01	; 1
+ a9e:	08 95       	ret
+
+00000aa0 <_exit>:
+ aa0:	f8 94       	cli
+
+00000aa2 <__stop_program>:
+ aa2:	ff cf       	rjmp	.-2      	; 0xaa2 <__stop_program>
