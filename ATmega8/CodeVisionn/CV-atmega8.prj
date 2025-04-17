@@ -6,11 +6,12 @@ CV=3.14 Advanced
 A=
 C=
 D=3/21/2025
-Files=1
+Files=2
 F1=CV-atmega8.c
-OpenedFiles=1
+F2=lcd.c
+OpenedFiles=2
 OF1=CV-atmega8.c
-Active1=0
+Active1=1
 DebugOutputListFilesDirectory=Debug\List
 DebugOutputObjectFilesDirectory=Debug
 DebugOutputExecutableFilesDirectory=Debug\Exe
@@ -19,16 +20,21 @@ OutputListFilesDirectory=Release\List
 OutputObjectFilesDirectory=Release
 OutputExecutableFilesDirectory=Release\Exe
 OutputLinkerFilesDirectory=Release\Exe
-AllowDisplayFunctionCallTree=0
+AllowDisplayFunctionCallTree=1
 CleanUp=2
 EditorPanelMode=0
 ActiveEditorPanel=0
-Active0=1
+Active0=0
 EditorPanel0=0
 PageIndex0=0
 EditorPanel1=0
-TimeStamp1=1517652202
+TimeStamp1=1519422021
 PageIndex1=1
+OF2=lcd.c
+Active2=0
+EditorPanel2=0
+TimeStamp2=1519420434
+PageIndex2=2
 [CompilerDebug]
 Chip=ATmega8
 CPUClock=8000000
@@ -125,10 +131,10 @@ WarningStaticRamEepromStorageAllocConstStrLit=0
 DebugBootLoader=0
 WatchAVR8LAutoVariables=0
 UseEEPROMLocation0=1
-RebuildAll=1
+RebuildAll=0
 LinkageInformationPresent=1
-COFFileTimeStamp=-1
-Build=1
+COFFileTimeStamp=1519424185
+Build=2
 [DefinedSymbolsDebug]
 Count=0
 [Compiler]
@@ -230,7 +236,7 @@ UseEEPROMLocation0=1
 RebuildAll=1
 LinkageInformationPresent=0
 COFFileTimeStamp=-1
-Build=1
+Build=2
 [DefinedSymbols]
 Count=0
 [CompilerAdvanced]
@@ -318,7 +324,7 @@ Row=0
 Column=0
 ScrollPosX=0
 ScrollPosY=0
-TimeStamp=1517652373
+TimeStamp=1519487088
 [BookmarksFoldedCode]
 Files=4
 F1=CV-atmega8.c
@@ -326,11 +332,11 @@ F2=lcd.h
 F3=lcd.c
 F4=D:\Embedded-Systems\Capacitance-Meter\CV-atmega8\lcd.c
 [Bookmarks1]
-TimeStamp=1517652202
-Row=382
-Column=40
+TimeStamp=1519422021
+Row=78
+Column=22
 ScrollPosX=0
-ScrollPosY=374
+ScrollPosY=63
 BK0=-1
 BK1=-1
 BK2=-1
@@ -342,7 +348,7 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks2]
-TimeStamp=1517649926
+TimeStamp=1519420434
 Row=0
 Column=0
 ScrollPosX=0
@@ -357,8 +363,6 @@ BK6=-1
 BK7=-1
 BK8=-1
 BK9=-1
-[FoldedCode2]
-Blocks=0
 [BuildInfoCompiler]
 L1=Build configuration: Debug
 L2=Chip: ATmega8
@@ -377,34 +381,48 @@ L14=Automatic register allocation: Yes
 L15=Smart register allocation: Yes
 L16=
 L17=Build: 1
-L18=10915 line(s) compiled
-L19=5 error(s)
-L20=1 warning(s)
+L18=14786 line(s) compiled
+L19=No errors
+L20=5 warning(s)
 L21=
 L22=Bit variables size: 0 byte(s)
 L23=
 L24=Data Stack area: 0x60 to 0x15F
 L25=Data Stack size: 256 byte(s)
-L26=Estimated Data Stack usage: 0 byte(s)
+L26=Estimated Data Stack usage: 42 byte(s)
 L27=
-L28=RAM Global variables area: 0x160 to 0x1CC
-L29=RAM Global variables size: 109 byte(s)
+L28=RAM Global variables area: 0x160 to 0x245
+L29=RAM Global variables size: 230 byte(s)
 L30=
-L31=Hardware Stack area: 0x1CD to 0x45F
-L32=Hardware Stack size: 659 byte(s)
+L31=Hardware Stack area: 0x246 to 0x45F
+L32=Hardware Stack size: 538 byte(s)
 L33=
 L34=Heap size: 0 byte(s)
 L35=
-Lines=36
+Lines=38
 L36=EEPROM usage: 0 byte(s), 0.0% of EEPROM
+L37=Program size: 1509 words (3018 bytes), 36.8% of FLASH
+L38=225 words (450 bytes), 13.0% reduced by Code Compression
 [BuildInfoAssembler]
-Lines=0
+Lines=12
+L1=AVRASM: AVR macro assembler 2.1.30 (build 592 Nov  7 2008 12:38:17)
+L2=Copyright (C) 1995-2008 ATMEL Corporation
+L3=
+L4=D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVisionn\Debug\List\CV-atmega8.asm(3995): No EEPROM data, deleting D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVisionn\Debug\Exe\CV-atmega8.eep
+L5=
+L6=ATmega8 memory use summary [bytes]:
+L7=Segment   Begin    End      Code   Data   Used    Size   Use%
+L8=---------------------------------------------------------------
+L9=[.cseg] 0x000000 0x000bca   2714    304   3018    8192  36.8%
+L10=[.dseg] 0x000060 0x000246      0    230    230    1024  22.5%
+L11=[.eseg] 0x000000 0x000000      0      0      0     512   0.0%
+L12=
 [Bookmarks3]
-TimeStamp=1517649926
-Row=343
-Column=31
+TimeStamp=1519420434
+Row=0
+Column=0
 ScrollPosX=0
-ScrollPosY=337
+ScrollPosY=284
 BK0=-1
 BK1=-1
 BK2=-1
@@ -415,8 +433,6 @@ BK6=-1
 BK7=-1
 BK8=-1
 BK9=-1
-[FoldedCode3]
-Blocks=0
 [Bookmarks4]
 TimeStamp=1517652363
 Row=0
@@ -435,19 +451,32 @@ BK8=-1
 BK9=-1
 [FoldedCode4]
 Blocks=0
-[FoldedCode1]
+[FoldedCode2]
 Blocks=0
 [HeadersList]
-Files=1
-F1=D:\Embedded-Systems\Capacitance-Meter\CV-atmega8\CV-atmega8.c
+Files=2
+F1=D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVisionn\CV-atmega8.c
+F2=D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVisionn\lcd.c
 [Header1]
-Files=9
-F1=..\..\cvavr\inc\mega8.h
-F2=..\..\cvavr\inc\mega8_bits.h
-F3=..\..\cvavr\inc\delay.h
-F4=..\..\cvavr\inc\eeprom.h
+Files=10
+F1=D:\Program Files\codevision\inc\mega8.h
+F2=D:\Program Files\codevision\inc\mega8_bits.h
+F3=D:\Program Files\codevision\inc\delay.h
+F4=D:\Program Files\codevision\inc\eeprom.h
 F5=lcd.h
-F6=..\..\cvavr\inc\stdio.h
-F7=..\..\cvavr\inc\io.h
-F8=..\..\cvavr\inc\stdarg.h
-F9=..\..\cvavr\inc\spi.h
+F6=D:\Program Files\codevision\inc\stdint.h
+F7=D:\Program Files\codevision\inc\stdio.h
+F8=D:\Program Files\codevision\inc\io.h
+F9=D:\Program Files\codevision\inc\stdarg.h
+F10=D:\Program Files\codevision\inc\spi.h
+[Header2]
+Files=5
+F1=D:\Program Files\codevision\inc\io.h
+F2=D:\Program Files\codevision\inc\mega8.h
+F3=D:\Program Files\codevision\inc\mega8_bits.h
+F4=D:\Program Files\codevision\inc\stdlib.h
+F5=lcd.h
+[FoldedCode1]
+Blocks=0
+[FoldedCode3]
+Blocks=0

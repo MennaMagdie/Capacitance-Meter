@@ -1,0 +1,47 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+decades                                                                           0x01CD       5
+lcdbuffer                                                                         0x01D2      32
+timer_highword                                                                    0x01F2       2
+measure_state                                                                     0x01F4       1
+set_admux                                                                         0x01F5       1
+menu_item                                                                         0x01F6      12
+calib                                                                             0x0202       8
+calib_offset                                                                      0x020A      16
+tenths_tab                                                                        0x021A      40
+_seed                                                                             0x0242       4
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+rangemode                                                                         R5           1
+gx                                                                                R6,R7        2
+gy                                                                                R8,R9        2
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+MUL_LONG_SHORT_S2                                                                 0x000D7     48
+timer1_ovf_isr                                                                    0x00107     20
+ana_comp_isr                                                                      0x0011B     29
+eeprom_read                                                                       0x00138     17
+eeprom_write                                                                      0x00149     13
+measure                                                                           0x00156    139
+calc_and_show                                                                     0x001E1    131
+calibrate                                                                         0x0026C     43
+menu                                                                              0x00297     38
+main                                                                              0x002BD    100
+ms_spin                                                                           0x00321     24
+_delay_loop_1                                                                     0x00339     11
+lcd_putchar                                                                       0x00344     13
+lcd_init                                                                          0x00351     21
+lcd_clear                                                                         0x00366      4
+lcd_string                                                                        0x0036A     46
+long2ascii                                                                        0x00398     88
+eeprom_read_block                                                                 0x003F0     17
+eeprom_write_block                                                                0x00401     19

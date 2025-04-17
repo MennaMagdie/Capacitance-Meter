@@ -173,8 +173,19 @@ unsigned long gresult;
 //       *result = gresult;
 //   }
 
-#define MUL_LONG_SHORT_S2(x, y, result_ptr) \
-    *(result_ptr) = (unsigned long)(x) * (unsigned short)(y);
+#include <stdint.h>
+void MUL_LONG_SHORT_S2(int32_t x, int16_t y, uint32_t *result) {
+    int16_t x_high = x >> 16;              // Integer part (signed)
+    uint16_t x_low = x & 0xFFFF;           // Fractional part (unsigned)
+
+    int32_t part1 = (int32_t)x_high * y;   // Signed mult: integer part
+    int32_t part2 = ((int32_t)x_low * y + 0x8000) >> 16; // Rounded fractional part
+
+    int32_t combined = part1 + part2;
+
+    *result = (uint32_t)combined;          // Cast final signed result to unsigned
+}
+
 
 // Standard Input/Output functions
 #include <stdio.h>
