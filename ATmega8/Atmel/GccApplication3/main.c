@@ -591,7 +591,8 @@ int main(void)
 {
   unsigned long l;
   
-  init(); //init peripherals/adc/timers/etc.. 
+  
+  (); //init peripherals/adc/timers/etc.. 
   
 	lcd_init(); //init lcd display
   

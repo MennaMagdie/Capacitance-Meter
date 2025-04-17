@@ -381,9 +381,15 @@ L14=Automatic register allocation: Yes
 L15=Smart register allocation: Yes
 L16=
 L17=Build: 1
+<<<<<<< HEAD
 L18=14786 line(s) compiled
 L19=No errors
 L20=5 warning(s)
+=======
+L18=0 line(s) compiled
+L19=5 error(s)
+L20=1 warning(s)
+>>>>>>> 72cbcc09222f57ec6ba5cd975f6fd921cf042d4e
 L21=
 L22=Bit variables size: 0 byte(s)
 L23=
@@ -455,8 +461,13 @@ Blocks=0
 Blocks=0
 [HeadersList]
 Files=2
+<<<<<<< HEAD
 F1=D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVisionn\CV-atmega8.c
 F2=D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVisionn\lcd.c
+=======
+F1=D:\Embedded-Systems\Capacitance-Meter\CV-atmega8\CV-atmega8.c
+F2=D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVisionn\CV-atmega8.c
+>>>>>>> 72cbcc09222f57ec6ba5cd975f6fd921cf042d4e
 [Header1]
 Files=10
 F1=D:\Program Files\codevision\inc\mega8.h
@@ -464,6 +475,7 @@ F2=D:\Program Files\codevision\inc\mega8_bits.h
 F3=D:\Program Files\codevision\inc\delay.h
 F4=D:\Program Files\codevision\inc\eeprom.h
 F5=lcd.h
+<<<<<<< HEAD
 F6=D:\Program Files\codevision\inc\stdint.h
 F7=D:\Program Files\codevision\inc\stdio.h
 F8=D:\Program Files\codevision\inc\io.h
@@ -480,3 +492,20 @@ F5=lcd.h
 Blocks=0
 [FoldedCode3]
 Blocks=0
+=======
+F6=..\..\cvavr\inc\stdio.h
+F7=..\..\cvavr\inc\io.h
+F8=..\..\cvavr\inc\stdarg.h
+F9=..\..\cvavr\inc\spi.h
+[Header2]
+Files=9
+F1=C:\cvavr\inc\mega8.h
+F2=C:\cvavr\inc\mega8_bits.h
+F3=C:\cvavr\inc\delay.h
+F4=C:\cvavr\inc\eeprom.h
+F5=lcd.h
+F6=C:\cvavr\inc\stdio.h
+F7=C:\cvavr\inc\io.h
+F8=C:\cvavr\inc\stdarg.h
+F9=C:\cvavr\inc\spi.h
+>>>>>>> 72cbcc09222f57ec6ba5cd975f6fd921cf042d4e

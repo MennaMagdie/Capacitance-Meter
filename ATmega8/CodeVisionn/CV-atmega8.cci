@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 VERSION:3 SOURCE_TIMESTAMP:5A908A45
 NODE:I LEVEL:0 LINE:24 "D:\Program Files\codevision\inc\mega8.h"
 NODE:I LEVEL:0 LINE:25 "D:\Program Files\codevision\inc\delay.h"
 NODE:I LEVEL:0 LINE:26 "D:\Program Files\codevision\inc\eeprom.h"
 NODE:I LEVEL:0 LINE:28 "D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVisionn\lcd.h"
+=======
+VERSION:3 SOURCE_TIMESTAMP:5A8DA0E9
+NODE:I LEVEL:0 LINE:24 "C:\cvavr\inc\mega8.h"
+NODE:I LEVEL:0 LINE:25 "C:\cvavr\inc\delay.h"
+NODE:I LEVEL:0 LINE:26 "C:\cvavr\inc\eeprom.h"
+NODE:I LEVEL:0 LINE:28 "D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVisionn\lcd.h"
+>>>>>>> 72cbcc09222f57ec6ba5cd975f6fd921cf042d4e
 NODE:M LEVEL:0 LINE:35 "DISCHARGE_ON"
 NODE:M LEVEL:0 LINE:36 "DISCHARGE_OFF"
 NODE:M LEVEL:0 LINE:39 "HIGH_RANGE"
@@ -48,6 +56,7 @@ NODE:M LEVEL:0 LINE:113 "SIZE_OF_CALIBOFFSET"
 NODE:V LEVEL:0 LINE:121 "gx -> R6,R7"
 NODE:V LEVEL:0 LINE:121 "gy -> R8,R9"
 NODE:V LEVEL:0 LINE:122 "gresult -> RAM:????"
+<<<<<<< HEAD
 NODE:I LEVEL:0 LINE:176 "D:\Program Files\codevision\inc\stdint.h"
 NODE:F LEVEL:0 LINE:177 "MUL_LONG_SHORT_S2(int32_t x,int16_t y,uint32_t * result)"
 NODE:I LEVEL:0 LINE:191 "D:\Program Files\codevision\inc\stdio.h"
@@ -62,3 +71,18 @@ NODE:F LEVEL:0 LINE:442 "calibrate(void)"
 NODE:F LEVEL:0 LINE:471 "menu(void)"
 NODE:I LEVEL:0 LINE:513 "D:\Program Files\codevision\inc\spi.h"
 NODE:F LEVEL:0 LINE:515 "main(void)"
+=======
+NODE:M LEVEL:0 LINE:177 "MUL_LONG_SHORT_S2"
+NODE:I LEVEL:0 LINE:180 "C:\cvavr\inc\stdio.h"
+NODE:F LEVEL:0 LINE:183 "timer1_ovf_isr(void)"
+NODE:F LEVEL:0 LINE:191 "ana_comp_isr(void)"
+NODE:F LEVEL:0 LINE:213 "eeprom_read(void)"
+NODE:F LEVEL:0 LINE:227 "eeprom_write(void)"
+NODE:F LEVEL:0 LINE:239 "measure(void)"
+NODE:F LEVEL:0 LINE:344 "calc_and_show(long value)"
+NODE:F LEVEL:0 LINE:408 "calibrate_zero(void)"
+NODE:F LEVEL:0 LINE:431 "calibrate(void)"
+NODE:F LEVEL:0 LINE:460 "menu(void)"
+NODE:I LEVEL:0 LINE:502 "C:\cvavr\inc\spi.h"
+NODE:F LEVEL:0 LINE:504 "main(void)"
+>>>>>>> 72cbcc09222f57ec6ba5cd975f6fd921cf042d4e
