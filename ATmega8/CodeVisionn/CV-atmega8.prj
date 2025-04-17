@@ -377,7 +377,7 @@ L14=Automatic register allocation: Yes
 L15=Smart register allocation: Yes
 L16=
 L17=Build: 1
-L18=10915 line(s) compiled
+L18=0 line(s) compiled
 L19=5 error(s)
 L20=1 warning(s)
 L21=
@@ -438,8 +438,9 @@ Blocks=0
 [FoldedCode1]
 Blocks=0
 [HeadersList]
-Files=1
+Files=2
 F1=D:\Embedded-Systems\Capacitance-Meter\CV-atmega8\CV-atmega8.c
+F2=D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVisionn\CV-atmega8.c
 [Header1]
 Files=9
 F1=..\..\cvavr\inc\mega8.h
@@ -451,3 +452,14 @@ F6=..\..\cvavr\inc\stdio.h
 F7=..\..\cvavr\inc\io.h
 F8=..\..\cvavr\inc\stdarg.h
 F9=..\..\cvavr\inc\spi.h
+[Header2]
+Files=9
+F1=C:\cvavr\inc\mega8.h
+F2=C:\cvavr\inc\mega8_bits.h
+F3=C:\cvavr\inc\delay.h
+F4=C:\cvavr\inc\eeprom.h
+F5=lcd.h
+F6=C:\cvavr\inc\stdio.h
+F7=C:\cvavr\inc\io.h
+F8=C:\cvavr\inc\stdarg.h
+F9=C:\cvavr\inc\spi.h
