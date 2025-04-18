@@ -316,4 +316,3 @@ char long2ascii(char *target, unsigned long value)
   
   return ret;
 }
-

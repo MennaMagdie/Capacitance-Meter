@@ -1,23 +1,9 @@
-//
-// Title        : Capmeter main file
-// Author       : Lars Pontoppidan Larsen
-// Date         : Jan 2006
-// Version      : 1.00
-// Target MCU   : Atmel AVR atmega8, atmega48/88/168
-//
-// DESCRIPTION:
-// Capmeter main implementation. See www accessible documentation.
-//
-// Modify init() function to fit either atmega8 or atmega48/88/168 series.
-//
-// DISCLAIMER:
-// The author is in no way responsible for any problems or damage caused by
-// using this code. Use at your own risk.
-//
-// LICENSE:
-// This code is distributed under the GNU Public License
-// which can be found at http://www.gnu.org/licenses/gpl.txt
-//
+/*
+ * GccApplication2.c
+ *
+ * Created: 4/13/2025 11:50:56 AM
+ * Author : Menna Magdy
+ */ 
 
 
 #include <avr/interrupt.h>
@@ -591,8 +577,7 @@ int main(void)
 {
   unsigned long l;
   
-  
-  (); //init peripherals/adc/timers/etc.. 
+  init(); //init peripherals/adc/timers/etc.. 
   
 	lcd_init(); //init lcd display
   

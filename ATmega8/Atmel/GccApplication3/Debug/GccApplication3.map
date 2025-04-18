@@ -537,25 +537,25 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x12c9
+.debug_info     0x00000000     0x12c8
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x48c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4/crtatmega8.o
  .debug_info    0x0000048c      0x408 lcd.o
- .debug_info    0x00000894      0x78f main.o
- .debug_info    0x00001023       0xaa C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_block.o)
- .debug_info    0x000010cd       0xa9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_byte.o)
- .debug_info    0x00001176       0xaa C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_block.o)
- .debug_info    0x00001220       0xa9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_byte.o)
+ .debug_info    0x00000894      0x78e main.o
+ .debug_info    0x00001022       0xaa C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_block.o)
+ .debug_info    0x000010cc       0xa9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_byte.o)
+ .debug_info    0x00001175       0xaa C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_block.o)
+ .debug_info    0x0000121f       0xa9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_byte.o)
 
-.debug_abbrev   0x00000000      0x791
+.debug_abbrev   0x00000000      0x7ab
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x44e C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4/crtatmega8.o
  .debug_abbrev  0x0000044e      0x17a lcd.o
- .debug_abbrev  0x000005c8      0x179 main.o
- .debug_abbrev  0x00000741       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_block.o)
- .debug_abbrev  0x00000755       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_byte.o)
- .debug_abbrev  0x00000769       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_block.o)
- .debug_abbrev  0x0000077d       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_byte.o)
+ .debug_abbrev  0x000005c8      0x193 main.o
+ .debug_abbrev  0x0000075b       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_block.o)
+ .debug_abbrev  0x0000076f       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eerd_byte.o)
+ .debug_abbrev  0x00000783       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_block.o)
+ .debug_abbrev  0x00000797       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4\libatmega8.a(eewr_byte.o)
 
 .debug_line     0x00000000      0xd11
  *(.debug_line .debug_line.* .debug_line_end)
@@ -572,13 +572,13 @@ END GROUP
  .debug_frame   0x00000000      0x118 lcd.o
  .debug_frame   0x00000118      0x164 main.o
 
-.debug_str      0x00000000      0x4df
+.debug_str      0x00000000      0x4db
  *(.debug_str)
  .debug_str     0x00000000      0x17a C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega8/avr4/crtatmega8.o
  .debug_str     0x0000017a      0x1e5 lcd.o
                                 0x21e (size before relaxing)
- .debug_str     0x0000035f      0x180 main.o
-                                0x2f7 (size before relaxing)
+ .debug_str     0x0000035f      0x17c main.o
+                                0x2f3 (size before relaxing)
 
 .debug_loc      0x00000000      0xae0
  *(.debug_loc)
