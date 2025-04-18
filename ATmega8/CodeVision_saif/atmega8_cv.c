@@ -626,7 +626,7 @@ TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
 
 
-lcd_init(8);
+lcd_init(16);
 
 
   

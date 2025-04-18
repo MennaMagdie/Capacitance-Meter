@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.1.30  D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm Thu Apr 17 17:55:57 2025
+AVRASM ver. 2.1.30  D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm Fri Apr 18 12:07:54 2025
 
-D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1086): warning: Register r5 already defined by the .DEF directive
-D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1087): warning: Register r4 already defined by the .DEF directive
-D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1088): warning: Register r7 already defined by the .DEF directive
-D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1089): warning: Register r6 already defined by the .DEF directive
+D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1086): warning: Register r5 already defined by the .DEF directive
+D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1087): warning: Register r4 already defined by the .DEF directive
+D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1088): warning: Register r7 already defined by the .DEF directive
+D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1089): warning: Register r6 already defined by the .DEF directive
                  
                  
                  ;CodeVisionAVR C Compiler V3.14 Advanced
@@ -1137,13 +1137,13 @@ D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_
                  
                  ;GLOBAL REGISTER VARIABLES INITIALIZATION
                  __REG_VARS:
-D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1126): warning: .cseg .db misalignment - padding zero byte
+D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1126): warning: .cseg .db misalignment - padding zero byte
 00001c 0004      	.DB  0x4
                  
                  _0x3:
 00001d 6e70
 00001e 6d75
-D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1129): warning: .cseg .db misalignment - padding zero byte
+D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1129): warning: .cseg .db misalignment - padding zero byte
 00001f 0020      	.DB  0x70,0x6E,0x75,0x6D,0x20
                  _0x5:
 000020 0160
@@ -1215,7 +1215,7 @@ D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_
 000060 2000
 000061 6f6c      	.DB  0x68,0x69,0x67,0x68,0x0,0x20,0x6C,0x6F
 000062 2077
-D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1150): warning: .cseg .db misalignment - padding zero byte
+D:\Desktop HDD\8th sem\Embedded Systems\Lab\Capacitance-Meter\ATmega8\CodeVision_saif\Debug\List\atmega8_cv.asm(1150): warning: .cseg .db misalignment - padding zero byte
 000063 0000      	.DB  0x77,0x20,0x0
                  _0x2000003:
 000064 c080      	.DB  0x80,0xC0
@@ -2724,8 +2724,8 @@ D:\Folders\Documents\_Uni\_Term 8\Embedded\Capacitance-Meter\ATmega8\CodeVision_
                  ; 0000 0272 
                  ; 0000 0273 
                  ; 0000 0274 
-                 ; 0000 0275 lcd_init(8);
-0002f8 e0a8      	LDI  R26,LOW(8)
+                 ; 0000 0275 lcd_init(16);
+0002f8 e1a0      	LDI  R26,LOW(16)
 0002f9 d08c      	RCALL _lcd_init
                  ; 0000 0276 
                  ; 0000 0277 

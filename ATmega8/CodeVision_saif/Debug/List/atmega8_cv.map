@@ -54,3 +54,35 @@ _print_G102                                                                     
 sprintf                                                                           0x00517     41
 strlen                                                                            0x00540     11
 strlenf                                                                           0x0054B     12
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+ana_comp_isr                                                                      0x000BF     28
+timer1_ovf_isr                                                                    0x000DB     16
+MUL_LONG_SHORT_S2                                                                 0x000EB     48
+eeprom_read                                                                       0x0011B     17
+eeprom_write                                                                      0x0012C     13
+lcd_string                                                                        0x00139     22
+long2ascii                                                                        0x0014F     15
+measure                                                                           0x0015E    138
+calc_and_show                                                                     0x001E8    129
+calibrate_zero                                                                    0x00269     10
+calibrate                                                                         0x00273     42
+menu                                                                              0x0029D     38
+init                                                                              0x002C3     17
+main                                                                              0x002D4     88
+_lcd_write_nibble_G100                                                            0x0032C     15
+_lcd_write_data                                                                   0x0033B     12
+lcd_gotoxy                                                                        0x00347     13
+lcd_clear                                                                         0x00354     14
+lcd_putchar                                                                       0x00362     20
+lcd_puts                                                                          0x00376     16
+lcd_init                                                                          0x00386     41
+eeprom_read_block                                                                 0x003AF     17
+eeprom_write_block                                                                0x003C0     19
+put_buff_G102                                                                     0x003D3     44
+_print_G102                                                                       0x003FF    280
+sprintf                                                                           0x00517     41
+strlen                                                                            0x00540     11
+strlenf                                                                           0x0054B     12
