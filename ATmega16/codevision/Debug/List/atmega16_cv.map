@@ -1,0 +1,52 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+decades                                                                           0x01CD       5
+tenths_tab                                                                        0x01D2      40
+lcdbuffer                                                                         0x01FA      32
+timer_highword                                                                    0x021A       2
+measure_state                                                                     0x021C       1
+set_admux                                                                         0x021D       1
+menu_item                                                                         0x021E      12
+calib                                                                             0x022A       8
+calib_offset                                                                      0x0232      16
+_base_y                                                                           0x0242       4
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+rangemode                                                                         R5           1
+_lcd_x                                                                            R4           1
+_lcd_y                                                                            R7           1
+_lcd_maxx                                                                         R6           1
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+ana_comp_isr                                                                      0x000EA     31
+timer1_ovf_isr                                                                    0x00109     20
+MUL_LONG_SHORT_S2                                                                 0x0011D     47
+eeprom_read                                                                       0x0014C     23
+eeprom_write                                                                      0x00163     19
+lcd_string                                                                        0x00176     28
+long2ascii                                                                        0x00192     96
+measure                                                                           0x001F2    157
+calc_and_show                                                                     0x0028F    152
+calibrate_zero                                                                    0x00327     15
+calibrate                                                                         0x00336     76
+menu                                                                              0x00382     45
+init                                                                              0x003AF     17
+main                                                                              0x003C0     94
+_lcd_write_nibble_G100                                                            0x0041E     21
+_lcd_write_data                                                                   0x00433     12
+lcd_gotoxy                                                                        0x0043F     13
+lcd_clear                                                                         0x0044C     12
+lcd_putchar                                                                       0x00458     21
+lcd_puts                                                                          0x0046D     17
+lcd_init                                                                          0x0047E     46
+eeprom_read_block                                                                 0x004AC     25
+eeprom_write_block                                                                0x004C5     28
