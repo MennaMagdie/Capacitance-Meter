@@ -2,7 +2,7 @@
 ;This program was created by the
 ;CodeWizardAVR V3.14 Advanced
 ;Automatic Program Generator
-;© Copyright 1998-2014 Pavel Haiduc, HP InfoTech s.r.l.
+;? Copyright 1998-2014 Pavel Haiduc, HP InfoTech s.r.l.
 ;http://www.hpinfotech.com
 ;
 ;Project :
@@ -49,19 +49,25 @@
 ;
 ;// Alphanumeric LCD functions
 ;#include <alcd.h>
-;#include <delay.h>   // if you're using delay_ms()
-;#include <eeprom.h>  // for EEPROM access
+;#include <delay.h>  // if you're using delay_ms()
+;#include <eeprom.h> // for EEPROM access
 ;#include <stdio.h>
 ;// Declare your global variables here
 ;#include <spi.h>
 ;
-;#define DISCHARGE_ON  DDRD |= (1<<6)
-;#define DISCHARGE_OFF DDRD &= ~(1<<6)
+;#define DISCHARGE_ON DDRD |= (1 << 6)
+;#define DISCHARGE_OFF DDRD &= ~(1 << 6)
 ;
 ;/* Range control */
-;#define HIGH_RANGE PORTD |= (1<<5); DDRD |= (1<<5)
-;#define LOW_RANGE  DDRD &= ~(1<<5); PORTD &= ~(1<<5)
-;#define PULLDOWN_RANGE PORTD &= ~(1<<5); DDRD |= (1<<5)
+;#define HIGH_RANGE   \
+;  PORTD |= (1 << 5); \
+;  DDRD |= (1 << 5)
+;#define LOW_RANGE    \
+;  DDRD &= ~(1 << 5); \
+;  PORTD &= ~(1 << 5)
+;#define PULLDOWN_RANGE \
+;  PORTD &= ~(1 << 5);  \
+;  DDRD |= (1 << 5)
 ;
 ;/* Threshold selection */
 ;#define ADMUX_LOW 1
@@ -70,32 +76,30 @@
 ;
 ;/* Timer abstraction */
 ;#define TIMER_VALUE TCNT1
-;#define TIMER_START TCCR1B = (1<<CS10)
-;#define TIMER_STOP  TCCR1B = 0
+;#define TIMER_START TCCR1B = (1 << CS10)
+;#define TIMER_STOP TCCR1B = 0
 ;
 ;/* Led abstraction */
-;#define LED_ON  PORTD &= ~(1<<4)
-;#define LED_OFF PORTD |= (1<<4)
+;#define LED_ON PORTD &= ~(1 << 4)
+;#define LED_OFF PORTD |= (1 << 4)
 ;
 ;/* Button abstraction */
-;#define BUTTON_PUSHED (!(PIND & (1<<2)))
+;#define BUTTON_PUSHED (!(PIND & (1 << 2)))
 ;
-;char decades[5] = {'p','n','u','m',' '};
+;char decades[5] = {'p', 'n', 'u', 'm', ' '};
 
 	.DSEG
-;
+;unsigned long tenths_tab[10] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
 ;char lcdbuffer[32];
 ;
 ;unsigned short volatile timer_highword;
-;
 ;
 ;/* Program states: */
 ;#define STATE_IDLE 0
 ;#define STATE_LOW_THRESH 1
 ;#define STATE_HIGH_THRESH 2
 ;#define STATE_DONE 3
-;//#define STATE_BUTTONDOWN 4
-;
+;// #define STATE_BUTTONDOWN 4
 ;
 ;unsigned char volatile measure_state;
 ;
@@ -103,30 +107,27 @@
 ;unsigned char volatile set_admux;
 ;
 ;/* The rangemode defines the measurement operation */
-;#define RANGE_HIGH_THRESH 1   /* If missing: threshold low */
-;#define RANGE_HIGH 2          /* If missing: range low */
+;#define RANGE_HIGH_THRESH 1 /* If missing: threshold low */
+;#define RANGE_HIGH 2        /* If missing: range low */
 ;#define RANGE_AUTO 4
-;#define RANGE_OVERFLOW 8      /* If set: cap was out of range */
+;#define RANGE_OVERFLOW 8 /* If set: cap was out of range */
 ;unsigned char rangemode = RANGE_AUTO;
 ;
-;
 ;/* Constants defining measuring operation: */
-;#define EXTRA_DISCHARGE_MS 100     /* Extra discharging that is done even after a threshold is crossed */
-;#define LOW_RANGE_TIMEOUT 500     /* At autorange, when to go to high range */
-;#define HIGH_RANGE_TIMEOUT 10000  /* When to give up completely */
-;
+;#define EXTRA_DISCHARGE_MS 100   /* Extra discharging that is done even after a threshold is crossed */
+;#define LOW_RANGE_TIMEOUT 500    /* At autorange, when to go to high range */
+;#define HIGH_RANGE_TIMEOUT 10000 /* When to give up completely */
 ;
 ;/* Menu system */
 ;#define MENU_SPEED 800 /* ms each menu item is shown */
 ;
 ;#define MENU_ITEMS 6
-;char *menu_item[MENU_ITEMS] = {"Range: Auto","Range: Low ","Range: High","Calibrate: Zero","Calibrate: 1 uF","Save calib ...
-_0x4:
+;char *menu_item[MENU_ITEMS] = {"Range: Auto", "Range: Low ", "Range: High", "Calibrate: Zero", "Calibrate: 1 uF", "Save  ...
+_0x5:
 	.BYTE 0x55
 ;
-;
-;#define CALIB_LOW 256000000    /* for 1uF reference prescale: >> 8 */
-;#define CALIB_HIGH 65536000    /* for 1uF reference */
+;#define CALIB_LOW 256000000 /* for 1uF reference prescale: >> 8 */
+;#define CALIB_HIGH 65536000 /* for 1uF reference */
 ;
 ;/* Calibration values are stored in eeprom in the following format:
 ;
@@ -138,32 +139,31 @@ _0x4:
 ;#define EEPROM_HEADER 1
 ;#define EEPROM_DATA 3
 ;
-;
 ;unsigned short calib[4] = {21430, 9308, 19423, 8437};
-;//unsigned short calib[4] = {53575, 46540, 19423, 8437};
-;
-;unsigned long calib_offset[4] = {0,0,0,0};
+;// unsigned short calib[4] = {53575, 46540, 19423, 8437};
+;//char buf[16];
+;unsigned long calib_offset[4] = {0, 0, 0, 0};
 ;
 ;#define SIZE_OF_CALIB 8
 ;#define SIZE_OF_CALIBOFFSET 16
 ;
-;  /* This macro fractionally multiplies 16.16 bit with 0.16 bit both unsigned,
-;     shifting the result two bytes right and returning 16.16 bit.
+;/* This macro fractionally multiplies 16.16 bit with 0.16 bit both unsigned,
+;   shifting the result two bytes right and returning 16.16 bit.
 ;
-;   Result is 16.16 bit unsigned */
-;
+; Result is 16.16 bit unsigned */
 ;
 ;/* Interrupt implementation */
-;interrupt [ANA_COMP] void ana_comp_isr(void)
-; 0000 0082 {
+;interrupt[ANA_COMP] void ana_comp_isr(void)
+; 0000 0081 {
 
 	.CSEG
 ;PCODE: $0000000D VOL: 0
 ;PCODE: $0000000E VOL: 0
-; 0000 0083   if (measure_state == STATE_LOW_THRESH) {
+; 0000 0082   if (measure_state == STATE_LOW_THRESH)
 ;PCODE: $0000000F VOL: 1
 ;PCODE: $00000010 VOL: 0
 ;PCODE: $00000011 VOL: 0
+; 0000 0083   {
 ; 0000 0084     /* We just got low threshold interrupt, start timer and set high threshold */
 ; 0000 0085     TIMER_START;
 ;PCODE: $00000012 VOL: 0
@@ -175,47 +175,46 @@ _0x4:
 ;PCODE: $00000016 VOL: 0
 ;PCODE: $00000017 VOL: 1
 ; 0000 0088   }
-; 0000 0089   else if(measure_state == STATE_HIGH_THRESH) {
+; 0000 0089   else if (measure_state == STATE_HIGH_THRESH)
 ;PCODE: $00000018 VOL: 0
 ;PCODE: $00000019 VOL: 0
 ;PCODE: $0000001A VOL: 1
 ;PCODE: $0000001B VOL: 0
 ;PCODE: $0000001C VOL: 0
-; 0000 008A     /* High threshold interrupt, verify it, then stop timer */
-; 0000 008B     if (ACSR & (1<<ACO)) {
+; 0000 008A   {
+; 0000 008B     /* High threshold interrupt, verify it, then stop timer */
+; 0000 008C     if (ACSR & (1 << ACO))
 ;PCODE: $0000001D VOL: 0
 ;PCODE: $0000001E VOL: 0
 ;PCODE: $0000001F VOL: 0
-; 0000 008C       TIMER_STOP;
+; 0000 008D     {
+; 0000 008E       TIMER_STOP;
 ;PCODE: $00000020 VOL: 0
 ;PCODE: $00000021 VOL: 0
-; 0000 008D       measure_state = STATE_DONE;
+; 0000 008F       measure_state = STATE_DONE;
 ;PCODE: $00000022 VOL: 0
 ;PCODE: $00000023 VOL: 1
-; 0000 008E     }
-; 0000 008F   }
+; 0000 0090     }
+; 0000 0091   }
 ;PCODE: $00000024 VOL: 0
-; 0000 0090 }
+; 0000 0092 }
 ;PCODE: $00000025 VOL: 0
 ;PCODE: $00000026 VOL: 0
 ;PCODE: $00000027 VOL: 0
 ;PCODE: $00000028 VOL: 0
 ;PCODE: $00000029 VOL: 0
 ;
-;
-;
-;
-;interrupt [TIM1_OVF] void timer1_ovf_isr(void)
-; 0000 0096 {
+;interrupt[TIM1_OVF] void timer1_ovf_isr(void)
+; 0000 0095 {
 ;PCODE: $0000002A VOL: 0
 ;PCODE: $0000002B VOL: 0
-; 0000 0097   /* Timer 1 counts the low 16 bits, this interrupt updates the high 16 bits */
-; 0000 0098   timer_highword++;
+; 0000 0096   /* Timer 1 counts the low 16 bits, this interrupt updates the high 16 bits */
+; 0000 0097   timer_highword++;
 ;PCODE: $0000002C VOL: 1
 ;PCODE: $0000002D VOL: 0
 ;PCODE: $0000002E VOL: 0
 ;PCODE: $0000002F VOL: 0
-; 0000 0099 }
+; 0000 0098 }
 ;PCODE: $00000030 VOL: 0
 ;PCODE: $00000031 VOL: 0
 ;PCODE: $00000032 VOL: 0
@@ -243,30 +242,35 @@ _0x4:
 ;*/
 ;
 ;#include <stdint.h>
-;void MUL_LONG_SHORT_S2(int32_t x, int16_t y, uint32_t *result) {
-; 0000 00B2 void MUL_LONG_SHORT_S2(int32_t x, int16_t y, uint32_t *result) {
+;void MUL_LONG_SHORT_S2(uint32_t x, uint16_t y, uint32_t *result)
+; 0000 00B2 {
 ;PCODE: $00000033 VOL: 0
 ;PCODE: $00000034 VOL: 0
-; 0000 00B3     int16_t x_high = x >> 16;              // Integer part (signed)
-; 0000 00B4     uint16_t x_low = x & 0xFFFF;           // Fractional part (unsigned)
+; 0000 00B3   // int16_t x_high = x >> 16;              // Integer part (signed)
+; 0000 00B4   // uint16_t x_low = x & 0xFFFF;           // Fractional part (unsigned)
 ; 0000 00B5 
-; 0000 00B6     int32_t part1 = (int32_t)x_high * y;   // Signed mult: integer part
-; 0000 00B7     int32_t part2 = ((int32_t)x_low * y + 0x8000) >> 16; // Rounded fractional part
+; 0000 00B6   // int32_t part1 = (int32_t)x_high * y;   // Signed mult: integer part
+; 0000 00B7   // int32_t part2 = ((int32_t)x_low * y + 0x8000) >> 16; // Rounded fractional part
 ; 0000 00B8 
-; 0000 00B9     int32_t combined = part1 + part2;
+; 0000 00B9   // int32_t combined = part1 + part2;
 ; 0000 00BA 
-; 0000 00BB     *result = (uint32_t)combined;          // Cast final signed result to unsigned
+; 0000 00BB   //*result = (uint32_t)combined;          // Cast final signed result to unsigned
+; 0000 00BC   uint16_t x_frac = x & 0xFFFF;
+; 0000 00BD   uint16_t x_int = x >> 16;
+; 0000 00BE 
+; 0000 00BF   uint32_t part1 = ((uint32_t)x_frac * y) >> 16;
+; 0000 00C0   uint32_t part2 = (uint32_t)x_int * y;
+; 0000 00C1   *result = (part2) + part1;
 ;PCODE: $00000035 VOL: 0
 ;PCODE: $00000036 VOL: 0
 ;PCODE: $00000037 VOL: 0
-;	x -> Y+20
-;	y -> Y+18
-;	*result -> Y+16
-;	x_high -> R16,R17
-;	x_low -> R18,R19
-;	part1 -> Y+12
-;	part2 -> Y+8
-;	combined -> Y+4
+;	x -> Y+16
+;	y -> Y+14
+;	*result -> Y+12
+;	x_frac -> R16,R17
+;	x_int -> R18,R19
+;	part1 -> Y+8
+;	part2 -> Y+4
 ;PCODE: $00000038 VOL: 0
 ;PCODE: $00000039 VOL: 0
 ;PCODE: $0000003A VOL: 0
@@ -291,108 +295,113 @@ _0x4:
 ;PCODE: $0000004D VOL: 0
 ;PCODE: $0000004E VOL: 0
 ;PCODE: $0000004F VOL: 0
+; 0000 00C2   // return result;
+; 0000 00C3 }
 ;PCODE: $00000050 VOL: 0
 ;PCODE: $00000051 VOL: 0
 ;PCODE: $00000052 VOL: 0
 ;PCODE: $00000053 VOL: 0
-; 0000 00BC }
+;// Multiply 16.16 fixed-point (x) by 0.16 fixed-point (y), return 16.16 fixed-point
+;/*uint32_t MUL_LONG_SHORT_S2(uint32_t x, uint16_t y) {
+;    uint16_t x_frac = x & 0xFFFF;
+;    uint16_t x_int = x >> 16;
+;    uint32_t part1 = ((uint32_t)x_frac * y) >> 16;
+;    uint32_t part2 = (uint32_t)x_int * y;
+;    uint32_t result = (part2) + part1;
+;    return result;
+;}  */
+;void eeprom_read(void)
+; 0000 00CE {
 ;PCODE: $00000054 VOL: 0
 ;PCODE: $00000055 VOL: 0
+; 0000 00CF   if (eeprom_read_byte((void *)EEPROM_HEADER) != 'C')
 ;PCODE: $00000056 VOL: 0
 ;PCODE: $00000057 VOL: 0
-;
-;void eeprom_read(void)
-; 0000 00BF {
 ;PCODE: $00000058 VOL: 0
 ;PCODE: $00000059 VOL: 0
-; 0000 00C0   if (eeprom_read_byte((void*)EEPROM_HEADER) != 'C')
+; 0000 00D0     return;
 ;PCODE: $0000005A VOL: 0
+; 0000 00D1 
+; 0000 00D2   if (eeprom_read_byte((void *)(EEPROM_HEADER + 1)) != 'D')
 ;PCODE: $0000005B VOL: 0
 ;PCODE: $0000005C VOL: 0
 ;PCODE: $0000005D VOL: 0
-; 0000 00C1     return;
 ;PCODE: $0000005E VOL: 0
-; 0000 00C2 
-; 0000 00C3   if (eeprom_read_byte((void*)(EEPROM_HEADER+1)) != 'D')
 ;PCODE: $0000005F VOL: 0
+; 0000 00D3     return;
 ;PCODE: $00000060 VOL: 0
+; 0000 00D4 
+; 0000 00D5   eeprom_read_block(calib_offset, (eeprom void *)EEPROM_DATA, SIZE_OF_CALIBOFFSET);
 ;PCODE: $00000061 VOL: 0
 ;PCODE: $00000062 VOL: 0
 ;PCODE: $00000063 VOL: 0
-; 0000 00C4     return;
 ;PCODE: $00000064 VOL: 0
-; 0000 00C5 
-; 0000 00C6   eeprom_read_block(calib_offset, (eeprom void *)EEPROM_DATA, SIZE_OF_CALIBOFFSET);
 ;PCODE: $00000065 VOL: 0
 ;PCODE: $00000066 VOL: 0
 ;PCODE: $00000067 VOL: 0
 ;PCODE: $00000068 VOL: 0
+; 0000 00D6   eeprom_read_block(calib, (eeprom void *)((char *)EEPROM_DATA + SIZE_OF_CALIBOFFSET), SIZE_OF_CALIB);
 ;PCODE: $00000069 VOL: 0
 ;PCODE: $0000006A VOL: 0
 ;PCODE: $0000006B VOL: 0
 ;PCODE: $0000006C VOL: 0
-; 0000 00C7   eeprom_read_block(calib, (eeprom void *)((char *)EEPROM_DATA + SIZE_OF_CALIBOFFSET), SIZE_OF_CALIB);
 ;PCODE: $0000006D VOL: 0
 ;PCODE: $0000006E VOL: 0
 ;PCODE: $0000006F VOL: 0
+; 0000 00D7 }
 ;PCODE: $00000070 VOL: 0
 ;PCODE: $00000071 VOL: 0
-;PCODE: $00000072 VOL: 0
-;PCODE: $00000073 VOL: 0
-; 0000 00C8 
-; 0000 00C9 
-; 0000 00CA }
-;PCODE: $00000074 VOL: 0
-;PCODE: $00000075 VOL: 0
 ;
 ;void eeprom_write(void)
-; 0000 00CD {
+; 0000 00DA {
+;PCODE: $00000072 VOL: 0
+;PCODE: $00000073 VOL: 0
+; 0000 00DB   eeprom_write_byte((void *)EEPROM_HEADER, 'C');
+;PCODE: $00000074 VOL: 0
+;PCODE: $00000075 VOL: 0
 ;PCODE: $00000076 VOL: 0
+; 0000 00DC   eeprom_write_byte((void *)(EEPROM_HEADER + 1), 'D');
 ;PCODE: $00000077 VOL: 0
-; 0000 00CE   eeprom_write_byte((void*)EEPROM_HEADER, 'C');
 ;PCODE: $00000078 VOL: 0
 ;PCODE: $00000079 VOL: 0
+; 0000 00DD 
+; 0000 00DE   eeprom_write_block(calib_offset, (eeprom void *)EEPROM_DATA, SIZE_OF_CALIBOFFSET);
 ;PCODE: $0000007A VOL: 0
-; 0000 00CF   eeprom_write_byte((void*)(EEPROM_HEADER+1), 'D');
 ;PCODE: $0000007B VOL: 0
 ;PCODE: $0000007C VOL: 0
 ;PCODE: $0000007D VOL: 0
-; 0000 00D0 
-; 0000 00D1   eeprom_write_block(calib_offset, (eeprom void *)EEPROM_DATA, SIZE_OF_CALIBOFFSET);
 ;PCODE: $0000007E VOL: 0
 ;PCODE: $0000007F VOL: 0
 ;PCODE: $00000080 VOL: 0
+; 0000 00DF   eeprom_write_block(calib, (eeprom void *)((char *)EEPROM_DATA + SIZE_OF_CALIBOFFSET), SIZE_OF_CALIB);
 ;PCODE: $00000081 VOL: 0
 ;PCODE: $00000082 VOL: 0
 ;PCODE: $00000083 VOL: 0
 ;PCODE: $00000084 VOL: 0
-; 0000 00D2   eeprom_write_block(calib, (eeprom void *)((char *)EEPROM_DATA + SIZE_OF_CALIBOFFSET), SIZE_OF_CALIB);
 ;PCODE: $00000085 VOL: 0
 ;PCODE: $00000086 VOL: 0
 ;PCODE: $00000087 VOL: 0
+; 0000 00E0 }
 ;PCODE: $00000088 VOL: 0
 ;PCODE: $00000089 VOL: 0
-;PCODE: $0000008A VOL: 0
-;PCODE: $0000008B VOL: 0
-; 0000 00D3 
-; 0000 00D4 
-; 0000 00D5 }
-;PCODE: $0000008C VOL: 0
-;PCODE: $0000008D VOL: 0
 ;
 ;void lcd_string(const char *str, unsigned char pos)
-; 0000 00D8 {
-;PCODE: $0000008E VOL: 0
-;PCODE: $0000008F VOL: 0
-; 0000 00D9   unsigned char row = (pos >= 16) ? 1 : 0;
-; 0000 00DA   unsigned char col = (pos % 16);
-; 0000 00DB   lcd_gotoxy(col, row);
-;PCODE: $00000090 VOL: 0
-;PCODE: $00000091 VOL: 0
+; 0000 00E3 {
+;PCODE: $0000008A VOL: 0
+;PCODE: $0000008B VOL: 0
+; 0000 00E4   unsigned char row = (pos >= 16) ? 1 : 0;
+; 0000 00E5   unsigned char col = (pos % 16);
+; 0000 00E6   lcd_gotoxy(col, row);
+;PCODE: $0000008C VOL: 0
+;PCODE: $0000008D VOL: 0
 ;	*str -> Y+3
 ;	pos -> Y+2
 ;	row -> R17
 ;	col -> R16
+;PCODE: $0000008E VOL: 0
+;PCODE: $0000008F VOL: 0
+;PCODE: $00000090 VOL: 0
+;PCODE: $00000091 VOL: 0
 ;PCODE: $00000092 VOL: 0
 ;PCODE: $00000093 VOL: 0
 ;PCODE: $00000094 VOL: 0
@@ -407,28 +416,41 @@ _0x4:
 ;PCODE: $0000009D VOL: 0
 ;PCODE: $0000009E VOL: 0
 ;PCODE: $0000009F VOL: 0
+; 0000 00E7   lcd_puts(str);
 ;PCODE: $000000A0 VOL: 0
 ;PCODE: $000000A1 VOL: 0
+; 0000 00E8 }
 ;PCODE: $000000A2 VOL: 0
 ;PCODE: $000000A3 VOL: 0
-; 0000 00DC   lcd_puts(str);
 ;PCODE: $000000A4 VOL: 0
 ;PCODE: $000000A5 VOL: 0
-; 0000 00DD }
+;
+;/*unsigned char long2ascii(char *buf, unsigned long val)
+;{
+;  // Converts val to a 5-digit ASCII right-aligned string, returns # of digits
+;  sprintf(buf, "%05lu", val); // e.g., 00042
+;  return 5;
+;}   */
+;char long2ascii(char *target, unsigned long value)
+; 0000 00F1 {
 ;PCODE: $000000A6 VOL: 0
 ;PCODE: $000000A7 VOL: 0
+; 0000 00F2   unsigned char p, pos=0;
+; 0000 00F3   unsigned char numbernow=0;
+; 0000 00F4   char ret=0;
+; 0000 00F5 
+; 0000 00F6   for (p=0;(p<10) && (pos<5);p++) {
 ;PCODE: $000000A8 VOL: 0
 ;PCODE: $000000A9 VOL: 0
-;
-;unsigned char long2ascii(char *buf, unsigned long val)
-; 0000 00E0 {
+;	*target -> Y+8
+;	value -> Y+4
+;	p -> R17
+;	pos -> R16
+;	numbernow -> R19
+;	ret -> R18
 ;PCODE: $000000AA VOL: 0
 ;PCODE: $000000AB VOL: 0
-; 0000 00E1   // Converts val to a 5-digit ASCII right-aligned string, returns # of digits
-; 0000 00E2   sprintf(buf, "%05lu", val);  // e.g., 00042
 ;PCODE: $000000AC VOL: 0
-;	*buf -> Y+4
-;	val -> Y+0
 ;PCODE: $000000AD VOL: 0
 ;PCODE: $000000AE VOL: 0
 ;PCODE: $000000AF VOL: 0
@@ -440,308 +462,481 @@ _0x4:
 ;PCODE: $000000B5 VOL: 0
 ;PCODE: $000000B6 VOL: 0
 ;PCODE: $000000B7 VOL: 0
-; 0000 00E3   return 5;
 ;PCODE: $000000B8 VOL: 0
 ;PCODE: $000000B9 VOL: 0
 ;PCODE: $000000BA VOL: 0
-; 0000 00E4 }
 ;PCODE: $000000BB VOL: 0
-;
-;long measure(void)
-; 0000 00E7 {
 ;PCODE: $000000BC VOL: 0
 ;PCODE: $000000BD VOL: 0
-; 0000 00E8   unsigned short i;
-; 0000 00E9 
-; 0000 00EA   measure_state = STATE_IDLE;
 ;PCODE: $000000BE VOL: 0
-;	i -> R16,R17
 ;PCODE: $000000BF VOL: 0
-;PCODE: $000000C0 VOL: 1
-; 0000 00EB 
-; 0000 00EC   /* Discharge cap until below low threshold + some extra */
-; 0000 00ED   ADMUX = ADMUX_LOW;
+; 0000 00F7 
+; 0000 00F8     if (numbernow) {
+;PCODE: $000000C0 VOL: 0
 ;PCODE: $000000C1 VOL: 0
+; 0000 00F9       /* Eventually place dot */
+; 0000 00FA       /* Notice the nice fallthrough construction. */
+; 0000 00FB       switch(p) {
 ;PCODE: $000000C2 VOL: 0
-; 0000 00EE   PULLDOWN_RANGE;      /* Use range signal as pull down */
 ;PCODE: $000000C3 VOL: 0
+; 0000 00FC       case 1:
 ;PCODE: $000000C4 VOL: 0
 ;PCODE: $000000C5 VOL: 0
+; 0000 00FD         ret++;
 ;PCODE: $000000C6 VOL: 0
-; 0000 00EF 
-; 0000 00F0   while(1) {
 ;PCODE: $000000C7 VOL: 0
-; 0000 00F1     /* Enable comperator and check value */
-; 0000 00F2     DISCHARGE_OFF;
+; 0000 00FE       case 4:
 ;PCODE: $000000C8 VOL: 0
 ;PCODE: $000000C9 VOL: 0
-; 0000 00F3     delay_ms(1);
 ;PCODE: $000000CA VOL: 0
 ;PCODE: $000000CB VOL: 0
 ;PCODE: $000000CC VOL: 0
-; 0000 00F4 
-; 0000 00F5     /* This value must be checked in every loop */
-; 0000 00F6     if (BUTTON_PUSHED)
+; 0000 00FF         ret++;
 ;PCODE: $000000CD VOL: 0
 ;PCODE: $000000CE VOL: 0
+; 0000 0100       case 7:
 ;PCODE: $000000CF VOL: 0
-; 0000 00F7       return 0;
 ;PCODE: $000000D0 VOL: 0
 ;PCODE: $000000D1 VOL: 0
 ;PCODE: $000000D2 VOL: 0
-; 0000 00F8 
-; 0000 00F9     if (!(ACSR & (1<<ACO)))
 ;PCODE: $000000D3 VOL: 0
+; 0000 0101         ret++;
 ;PCODE: $000000D4 VOL: 0
 ;PCODE: $000000D5 VOL: 0
+; 0000 0102         target[pos] = '.';
 ;PCODE: $000000D6 VOL: 0
-; 0000 00FA       break;
 ;PCODE: $000000D7 VOL: 0
-; 0000 00FB 
-; 0000 00FC     /* Discharge for a while */
-; 0000 00FD     DISCHARGE_ON;
 ;PCODE: $000000D8 VOL: 0
 ;PCODE: $000000D9 VOL: 0
+; 0000 0103         pos++;
 ;PCODE: $000000DA VOL: 0
-; 0000 00FE     delay_ms(10);
 ;PCODE: $000000DB VOL: 0
+; 0000 0104       }
 ;PCODE: $000000DC VOL: 0
+; 0000 0105     }
+; 0000 0106 
+; 0000 0107     if (value < tenths_tab[p]) {
 ;PCODE: $000000DD VOL: 0
-; 0000 00FF 
-; 0000 0100 
-; 0000 0101   }
 ;PCODE: $000000DE VOL: 0
 ;PCODE: $000000DF VOL: 0
-; 0000 0102 
-; 0000 0103   DISCHARGE_ON;
 ;PCODE: $000000E0 VOL: 0
 ;PCODE: $000000E1 VOL: 0
-; 0000 0104   delay_ms(EXTRA_DISCHARGE_MS);
 ;PCODE: $000000E2 VOL: 0
 ;PCODE: $000000E3 VOL: 0
 ;PCODE: $000000E4 VOL: 0
-; 0000 0105 
-; 0000 0106   /* Prepare: reset timer, low range */
-; 0000 0107   TIMER_STOP;
 ;PCODE: $000000E5 VOL: 0
 ;PCODE: $000000E6 VOL: 0
-; 0000 0108   TIMER_VALUE = 0;
+; 0000 0108       if (numbernow) {
 ;PCODE: $000000E7 VOL: 0
 ;PCODE: $000000E8 VOL: 0
-; 0000 0109   timer_highword = 0;
+; 0000 0109         /* Inside number, put a zero */
+; 0000 010A         target[pos] = '0';
 ;PCODE: $000000E9 VOL: 0
-;PCODE: $000000EA VOL: 1
-; 0000 010A 
-; 0000 010B   LOW_RANGE;
+;PCODE: $000000EA VOL: 0
 ;PCODE: $000000EB VOL: 0
 ;PCODE: $000000EC VOL: 0
+; 0000 010B         pos++;
 ;PCODE: $000000ED VOL: 0
 ;PCODE: $000000EE VOL: 0
-; 0000 010C 
-; 0000 010D   measure_state = STATE_LOW_THRESH;
+; 0000 010C       }
+; 0000 010D       else {
 ;PCODE: $000000EF VOL: 0
-;PCODE: $000000F0 VOL: 1
-; 0000 010E 
-; 0000 010F   /* High or medium threshold */
-; 0000 0110   if (rangemode & RANGE_HIGH_THRESH)
+;PCODE: $000000F0 VOL: 0
+; 0000 010E         /* Check if we need to pad with spaces */
+; 0000 010F         if (p>=6) {
 ;PCODE: $000000F1 VOL: 0
 ;PCODE: $000000F2 VOL: 0
 ;PCODE: $000000F3 VOL: 0
-; 0000 0111     set_admux = ADMUX_HIGH;
+; 0000 0110           target[pos] = ' ';
 ;PCODE: $000000F4 VOL: 0
-;PCODE: $000000F5 VOL: 1
-; 0000 0112   else
+;PCODE: $000000F5 VOL: 0
 ;PCODE: $000000F6 VOL: 0
 ;PCODE: $000000F7 VOL: 0
-; 0000 0113     set_admux = ADMUX_MEDIUM;
+; 0000 0111           pos++;
 ;PCODE: $000000F8 VOL: 0
-;PCODE: $000000F9 VOL: 1
-; 0000 0114 
-; 0000 0115   /* Apply step */
-; 0000 0116   LED_ON;
+;PCODE: $000000F9 VOL: 0
+; 0000 0112         }
+; 0000 0113 
+; 0000 0114         if (p==6) {
 ;PCODE: $000000FA VOL: 0
 ;PCODE: $000000FB VOL: 0
 ;PCODE: $000000FC VOL: 0
-; 0000 0117   DISCHARGE_OFF;
 ;PCODE: $000000FD VOL: 0
+; 0000 0115           /* We also need to place a space instead of . */
+; 0000 0116           target[pos] = ' ';
 ;PCODE: $000000FE VOL: 0
-; 0000 0118 
-; 0000 0119   if (rangemode & RANGE_AUTO) {
 ;PCODE: $000000FF VOL: 0
 ;PCODE: $00000100 VOL: 0
 ;PCODE: $00000101 VOL: 0
-; 0000 011A 
-; 0000 011B     /* Autorange: See if low range produces something before LOW_RANGE_TIMEOUT ms */
-; 0000 011C     i = 0;
+; 0000 0117           pos++;
 ;PCODE: $00000102 VOL: 0
 ;PCODE: $00000103 VOL: 0
-; 0000 011D     while ((measure_state == STATE_LOW_THRESH) && (++i < LOW_RANGE_TIMEOUT)) {
+; 0000 0118         }
+; 0000 0119       }
 ;PCODE: $00000104 VOL: 0
-;PCODE: $00000105 VOL: 1
+;PCODE: $00000105 VOL: 0
+; 0000 011A     }
+; 0000 011B     else {
 ;PCODE: $00000106 VOL: 0
 ;PCODE: $00000107 VOL: 0
+; 0000 011C       target[pos] = '0';
 ;PCODE: $00000108 VOL: 0
 ;PCODE: $00000109 VOL: 0
 ;PCODE: $0000010A VOL: 0
 ;PCODE: $0000010B VOL: 0
+; 0000 011D       while (value >= tenths_tab[p]) {
 ;PCODE: $0000010C VOL: 0
 ;PCODE: $0000010D VOL: 0
 ;PCODE: $0000010E VOL: 0
 ;PCODE: $0000010F VOL: 0
 ;PCODE: $00000110 VOL: 0
-; 0000 011E       delay_ms(1);
 ;PCODE: $00000111 VOL: 0
 ;PCODE: $00000112 VOL: 0
 ;PCODE: $00000113 VOL: 0
-; 0000 011F 
-; 0000 0120       /* This value must be checked in every loop */
-; 0000 0121       if (BUTTON_PUSHED)
 ;PCODE: $00000114 VOL: 0
 ;PCODE: $00000115 VOL: 0
+; 0000 011E         target[pos]++;
 ;PCODE: $00000116 VOL: 0
-; 0000 0122         return 0;
 ;PCODE: $00000117 VOL: 0
 ;PCODE: $00000118 VOL: 0
 ;PCODE: $00000119 VOL: 0
-; 0000 0123     }
 ;PCODE: $0000011A VOL: 0
+; 0000 011F         value -= tenths_tab[p];
 ;PCODE: $0000011B VOL: 0
 ;PCODE: $0000011C VOL: 0
-; 0000 0124 
-; 0000 0125     if (i >= LOW_RANGE_TIMEOUT) {
 ;PCODE: $0000011D VOL: 0
 ;PCODE: $0000011E VOL: 0
 ;PCODE: $0000011F VOL: 0
-; 0000 0126       /* low range timeout, go to high range (better discharge a little first) */
-; 0000 0127       DISCHARGE_ON;
 ;PCODE: $00000120 VOL: 0
 ;PCODE: $00000121 VOL: 0
-; 0000 0128       delay_ms(EXTRA_DISCHARGE_MS);
 ;PCODE: $00000122 VOL: 0
 ;PCODE: $00000123 VOL: 0
+; 0000 0120       }
 ;PCODE: $00000124 VOL: 0
-; 0000 0129       DISCHARGE_OFF;
 ;PCODE: $00000125 VOL: 0
+; 0000 0121       pos++;
 ;PCODE: $00000126 VOL: 0
-; 0000 012A       HIGH_RANGE;
 ;PCODE: $00000127 VOL: 0
+; 0000 0122       numbernow = 1;
 ;PCODE: $00000128 VOL: 0
 ;PCODE: $00000129 VOL: 0
+; 0000 0123     }
 ;PCODE: $0000012A VOL: 0
-; 0000 012B       rangemode |= RANGE_HIGH;
+; 0000 0124   }
 ;PCODE: $0000012B VOL: 0
 ;PCODE: $0000012C VOL: 0
 ;PCODE: $0000012D VOL: 0
-; 0000 012C     }
-; 0000 012D     else {
 ;PCODE: $0000012E VOL: 0
 ;PCODE: $0000012F VOL: 0
-; 0000 012E       /* low range was ok, set flag accordingly */
-; 0000 012F       rangemode &= ~RANGE_HIGH;
+; 0000 0125 
+; 0000 0126   return ret;
 ;PCODE: $00000130 VOL: 0
 ;PCODE: $00000131 VOL: 0
 ;PCODE: $00000132 VOL: 0
-; 0000 0130     }
 ;PCODE: $00000133 VOL: 0
-; 0000 0131   }
-; 0000 0132   else if (rangemode & RANGE_HIGH) {
+; 0000 0127 }
 ;PCODE: $00000134 VOL: 0
+;
+;long measure(void)
+; 0000 012A {
 ;PCODE: $00000135 VOL: 0
 ;PCODE: $00000136 VOL: 0
+; 0000 012B   unsigned short i;
+; 0000 012C 
+; 0000 012D   measure_state = STATE_IDLE;
 ;PCODE: $00000137 VOL: 0
+;	i -> R16,R17
 ;PCODE: $00000138 VOL: 0
-; 0000 0133     HIGH_RANGE;
-;PCODE: $00000139 VOL: 0
+;PCODE: $00000139 VOL: 1
+; 0000 012E 
+; 0000 012F   /* Discharge cap until below low threshold + some extra */
+; 0000 0130   ADMUX = ADMUX_LOW;
 ;PCODE: $0000013A VOL: 0
 ;PCODE: $0000013B VOL: 0
+; 0000 0131   PULLDOWN_RANGE; /* Use range signal as pull down */
 ;PCODE: $0000013C VOL: 0
-; 0000 0134   }
-; 0000 0135 
-; 0000 0136   /* Wait for completion, timing out after HIGH_RANGE_TIMEOUT */
-; 0000 0137   i = 0;
 ;PCODE: $0000013D VOL: 0
 ;PCODE: $0000013E VOL: 0
 ;PCODE: $0000013F VOL: 0
+; 0000 0132 
+; 0000 0133   while (1)
 ;PCODE: $00000140 VOL: 0
-; 0000 0138   while ((measure_state != STATE_DONE) && (++i < HIGH_RANGE_TIMEOUT)) {
+; 0000 0134   {
+; 0000 0135     /* Enable comperator and check value */
+; 0000 0136     DISCHARGE_OFF;
 ;PCODE: $00000141 VOL: 0
-;PCODE: $00000142 VOL: 1
+;PCODE: $00000142 VOL: 0
+; 0000 0137     delay_ms(1);
 ;PCODE: $00000143 VOL: 0
 ;PCODE: $00000144 VOL: 0
 ;PCODE: $00000145 VOL: 0
+; 0000 0138 
+; 0000 0139     /* This value must be checked in every loop */
+; 0000 013A     if (BUTTON_PUSHED)
 ;PCODE: $00000146 VOL: 0
 ;PCODE: $00000147 VOL: 0
 ;PCODE: $00000148 VOL: 0
+; 0000 013B       return 0;
 ;PCODE: $00000149 VOL: 0
 ;PCODE: $0000014A VOL: 0
 ;PCODE: $0000014B VOL: 0
+; 0000 013C 
+; 0000 013D     if (!(ACSR & (1 << ACO)))
 ;PCODE: $0000014C VOL: 0
 ;PCODE: $0000014D VOL: 0
-; 0000 0139     delay_ms(1);
 ;PCODE: $0000014E VOL: 0
 ;PCODE: $0000014F VOL: 0
+; 0000 013E       break;
 ;PCODE: $00000150 VOL: 0
-; 0000 013A 
-; 0000 013B     /* This value must be checked in every loop */
-; 0000 013C     if (BUTTON_PUSHED)
+; 0000 013F 
+; 0000 0140     /* Discharge for a while */
+; 0000 0141     DISCHARGE_ON;
 ;PCODE: $00000151 VOL: 0
 ;PCODE: $00000152 VOL: 0
 ;PCODE: $00000153 VOL: 0
-; 0000 013D       return 0;
+; 0000 0142     delay_ms(10);
 ;PCODE: $00000154 VOL: 0
 ;PCODE: $00000155 VOL: 0
 ;PCODE: $00000156 VOL: 0
-; 0000 013E   }
+; 0000 0143   }
 ;PCODE: $00000157 VOL: 0
 ;PCODE: $00000158 VOL: 0
+; 0000 0144 
+; 0000 0145   DISCHARGE_ON;
 ;PCODE: $00000159 VOL: 0
-; 0000 013F 
-; 0000 0140   /* Done, discharge cap now */
-; 0000 0141   LOW_RANGE;
 ;PCODE: $0000015A VOL: 0
+; 0000 0146   delay_ms(EXTRA_DISCHARGE_MS);
 ;PCODE: $0000015B VOL: 0
 ;PCODE: $0000015C VOL: 0
 ;PCODE: $0000015D VOL: 0
-; 0000 0142   DISCHARGE_ON;
+; 0000 0147 
+; 0000 0148   /* Prepare: reset timer, low range */
+; 0000 0149   TIMER_STOP;
 ;PCODE: $0000015E VOL: 0
 ;PCODE: $0000015F VOL: 0
-; 0000 0143   LED_OFF;
+; 0000 014A   TIMER_VALUE = 0;
 ;PCODE: $00000160 VOL: 0
 ;PCODE: $00000161 VOL: 0
-; 0000 0144 
-; 0000 0145   if (measure_state != STATE_DONE)
-;PCODE: $00000162 VOL: 1
-;PCODE: $00000163 VOL: 0
+; 0000 014B   timer_highword = 0;
+;PCODE: $00000162 VOL: 0
+;PCODE: $00000163 VOL: 1
+; 0000 014C 
+; 0000 014D   LOW_RANGE;
 ;PCODE: $00000164 VOL: 0
-; 0000 0146     rangemode |= RANGE_OVERFLOW;
 ;PCODE: $00000165 VOL: 0
 ;PCODE: $00000166 VOL: 0
 ;PCODE: $00000167 VOL: 0
-; 0000 0147   else
+; 0000 014E 
+; 0000 014F   measure_state = STATE_LOW_THRESH;
 ;PCODE: $00000168 VOL: 0
-;PCODE: $00000169 VOL: 0
-; 0000 0148     rangemode &= ~RANGE_OVERFLOW;
+;PCODE: $00000169 VOL: 1
+; 0000 0150 
+; 0000 0151   /* High or medium threshold */
+; 0000 0152   if (rangemode & RANGE_HIGH_THRESH)
 ;PCODE: $0000016A VOL: 0
 ;PCODE: $0000016B VOL: 0
 ;PCODE: $0000016C VOL: 0
-; 0000 0149 
-; 0000 014A   measure_state = STATE_IDLE;
+; 0000 0153     set_admux = ADMUX_HIGH;
 ;PCODE: $0000016D VOL: 0
-;PCODE: $0000016E VOL: 0
-;PCODE: $0000016F VOL: 1
-; 0000 014B 
-; 0000 014C   return ((unsigned long)timer_highword << 16) + TIMER_VALUE;
-;PCODE: $00000170 VOL: 1
+;PCODE: $0000016E VOL: 1
+; 0000 0154   else
+;PCODE: $0000016F VOL: 0
+;PCODE: $00000170 VOL: 0
+; 0000 0155     set_admux = ADMUX_MEDIUM;
 ;PCODE: $00000171 VOL: 0
-;PCODE: $00000172 VOL: 0
+;PCODE: $00000172 VOL: 1
+; 0000 0156 
+; 0000 0157   /* Apply step */
+; 0000 0158   LED_ON;
 ;PCODE: $00000173 VOL: 0
 ;PCODE: $00000174 VOL: 0
 ;PCODE: $00000175 VOL: 0
+; 0000 0159   DISCHARGE_OFF;
 ;PCODE: $00000176 VOL: 0
 ;PCODE: $00000177 VOL: 0
+; 0000 015A 
+; 0000 015B   if (rangemode & RANGE_AUTO)
 ;PCODE: $00000178 VOL: 0
-; 0000 014D }
 ;PCODE: $00000179 VOL: 0
+;PCODE: $0000017A VOL: 0
+; 0000 015C   {
+; 0000 015D 
+; 0000 015E     /* Autorange: See if low range produces something before LOW_RANGE_TIMEOUT ms */
+; 0000 015F     i = 0;
+;PCODE: $0000017B VOL: 0
+;PCODE: $0000017C VOL: 0
+; 0000 0160     while ((measure_state == STATE_LOW_THRESH) && (++i < LOW_RANGE_TIMEOUT))
+;PCODE: $0000017D VOL: 0
+;PCODE: $0000017E VOL: 1
+;PCODE: $0000017F VOL: 0
+;PCODE: $00000180 VOL: 0
+;PCODE: $00000181 VOL: 0
+;PCODE: $00000182 VOL: 0
+;PCODE: $00000183 VOL: 0
+;PCODE: $00000184 VOL: 0
+;PCODE: $00000185 VOL: 0
+;PCODE: $00000186 VOL: 0
+;PCODE: $00000187 VOL: 0
+;PCODE: $00000188 VOL: 0
+;PCODE: $00000189 VOL: 0
+; 0000 0161     {
+; 0000 0162       delay_ms(1);
+;PCODE: $0000018A VOL: 0
+;PCODE: $0000018B VOL: 0
+;PCODE: $0000018C VOL: 0
+; 0000 0163 
+; 0000 0164       /* This value must be checked in every loop */
+; 0000 0165       if (BUTTON_PUSHED)
+;PCODE: $0000018D VOL: 0
+;PCODE: $0000018E VOL: 0
+;PCODE: $0000018F VOL: 0
+; 0000 0166         return 0;
+;PCODE: $00000190 VOL: 0
+;PCODE: $00000191 VOL: 0
+;PCODE: $00000192 VOL: 0
+; 0000 0167     }
+;PCODE: $00000193 VOL: 0
+;PCODE: $00000194 VOL: 0
+;PCODE: $00000195 VOL: 0
+; 0000 0168 
+; 0000 0169     if (i >= LOW_RANGE_TIMEOUT)
+;PCODE: $00000196 VOL: 0
+;PCODE: $00000197 VOL: 0
+;PCODE: $00000198 VOL: 0
+; 0000 016A     {
+; 0000 016B       /* low range timeout, go to high range (better discharge a little first) */
+; 0000 016C       DISCHARGE_ON;
+;PCODE: $00000199 VOL: 0
+;PCODE: $0000019A VOL: 0
+; 0000 016D       delay_ms(EXTRA_DISCHARGE_MS);
+;PCODE: $0000019B VOL: 0
+;PCODE: $0000019C VOL: 0
+;PCODE: $0000019D VOL: 0
+; 0000 016E       DISCHARGE_OFF;
+;PCODE: $0000019E VOL: 0
+;PCODE: $0000019F VOL: 0
+; 0000 016F       HIGH_RANGE;
+;PCODE: $000001A0 VOL: 0
+;PCODE: $000001A1 VOL: 0
+;PCODE: $000001A2 VOL: 0
+;PCODE: $000001A3 VOL: 0
+; 0000 0170       rangemode |= RANGE_HIGH;
+;PCODE: $000001A4 VOL: 0
+;PCODE: $000001A5 VOL: 0
+;PCODE: $000001A6 VOL: 0
+; 0000 0171     }
+; 0000 0172     else
+;PCODE: $000001A7 VOL: 0
+;PCODE: $000001A8 VOL: 0
+; 0000 0173     {
+; 0000 0174       /* low range was ok, set flag accordingly */
+; 0000 0175       rangemode &= ~RANGE_HIGH;
+;PCODE: $000001A9 VOL: 0
+;PCODE: $000001AA VOL: 0
+;PCODE: $000001AB VOL: 0
+; 0000 0176     }
+;PCODE: $000001AC VOL: 0
+; 0000 0177   }
+; 0000 0178   else if (rangemode & RANGE_HIGH)
+;PCODE: $000001AD VOL: 0
+;PCODE: $000001AE VOL: 0
+;PCODE: $000001AF VOL: 0
+;PCODE: $000001B0 VOL: 0
+;PCODE: $000001B1 VOL: 0
+; 0000 0179   {
+; 0000 017A     HIGH_RANGE;
+;PCODE: $000001B2 VOL: 0
+;PCODE: $000001B3 VOL: 0
+;PCODE: $000001B4 VOL: 0
+;PCODE: $000001B5 VOL: 0
+; 0000 017B   }
+; 0000 017C 
+; 0000 017D   /* Wait for completion, timing out after HIGH_RANGE_TIMEOUT */
+; 0000 017E   i = 0;
+;PCODE: $000001B6 VOL: 0
+;PCODE: $000001B7 VOL: 0
+;PCODE: $000001B8 VOL: 0
+;PCODE: $000001B9 VOL: 0
+; 0000 017F   while ((measure_state != STATE_DONE) && (++i < HIGH_RANGE_TIMEOUT))
+;PCODE: $000001BA VOL: 0
+;PCODE: $000001BB VOL: 1
+;PCODE: $000001BC VOL: 0
+;PCODE: $000001BD VOL: 0
+;PCODE: $000001BE VOL: 0
+;PCODE: $000001BF VOL: 0
+;PCODE: $000001C0 VOL: 0
+;PCODE: $000001C1 VOL: 0
+;PCODE: $000001C2 VOL: 0
+;PCODE: $000001C3 VOL: 0
+;PCODE: $000001C4 VOL: 0
+;PCODE: $000001C5 VOL: 0
+;PCODE: $000001C6 VOL: 0
+; 0000 0180   {
+; 0000 0181     delay_ms(1);
+;PCODE: $000001C7 VOL: 0
+;PCODE: $000001C8 VOL: 0
+;PCODE: $000001C9 VOL: 0
+; 0000 0182 
+; 0000 0183     /* This value must be checked in every loop */
+; 0000 0184     if (BUTTON_PUSHED)
+;PCODE: $000001CA VOL: 0
+;PCODE: $000001CB VOL: 0
+;PCODE: $000001CC VOL: 0
+; 0000 0185       return 0;
+;PCODE: $000001CD VOL: 0
+;PCODE: $000001CE VOL: 0
+;PCODE: $000001CF VOL: 0
+; 0000 0186   }
+;PCODE: $000001D0 VOL: 0
+;PCODE: $000001D1 VOL: 0
+;PCODE: $000001D2 VOL: 0
+; 0000 0187 
+; 0000 0188   /* Done, discharge cap now */
+; 0000 0189   LOW_RANGE;
+;PCODE: $000001D3 VOL: 0
+;PCODE: $000001D4 VOL: 0
+;PCODE: $000001D5 VOL: 0
+;PCODE: $000001D6 VOL: 0
+; 0000 018A   DISCHARGE_ON;
+;PCODE: $000001D7 VOL: 0
+;PCODE: $000001D8 VOL: 0
+; 0000 018B   LED_OFF;
+;PCODE: $000001D9 VOL: 0
+;PCODE: $000001DA VOL: 0
+; 0000 018C 
+; 0000 018D   if (measure_state != STATE_DONE)
+;PCODE: $000001DB VOL: 1
+;PCODE: $000001DC VOL: 0
+;PCODE: $000001DD VOL: 0
+; 0000 018E     rangemode |= RANGE_OVERFLOW;
+;PCODE: $000001DE VOL: 0
+;PCODE: $000001DF VOL: 0
+;PCODE: $000001E0 VOL: 0
+; 0000 018F   else
+;PCODE: $000001E1 VOL: 0
+;PCODE: $000001E2 VOL: 0
+; 0000 0190     rangemode &= ~RANGE_OVERFLOW;
+;PCODE: $000001E3 VOL: 0
+;PCODE: $000001E4 VOL: 0
+;PCODE: $000001E5 VOL: 0
+; 0000 0191 
+; 0000 0192   measure_state = STATE_IDLE;
+;PCODE: $000001E6 VOL: 0
+;PCODE: $000001E7 VOL: 0
+;PCODE: $000001E8 VOL: 1
+; 0000 0193 
+; 0000 0194   return ((unsigned long)timer_highword << 16) + TIMER_VALUE;
+;PCODE: $000001E9 VOL: 1
+;PCODE: $000001EA VOL: 0
+;PCODE: $000001EB VOL: 0
+;PCODE: $000001EC VOL: 0
+;PCODE: $000001ED VOL: 0
+;PCODE: $000001EE VOL: 0
+;PCODE: $000001EF VOL: 0
+;PCODE: $000001F0 VOL: 0
+;PCODE: $000001F1 VOL: 0
+; 0000 0195 }
+;PCODE: $000001F2 VOL: 0
 ;
 ;/*
 ;   This function deals with value according to the global rangemode flag,
@@ -753,344 +948,165 @@ _0x4:
 ;*/
 ;
 ;void calc_and_show(long value)
-; 0000 0159 {
-;PCODE: $0000017A VOL: 0
-;PCODE: $0000017B VOL: 0
-; 0000 015A   unsigned char b;
-; 0000 015B   unsigned long l;
-; 0000 015C 
-; 0000 015D   if (rangemode & RANGE_AUTO)
-;PCODE: $0000017C VOL: 0
-;PCODE: $0000017D VOL: 0
-;PCODE: $0000017E VOL: 0
-;	value -> Y+5
-;	b -> R17
-;	l -> Y+1
-;PCODE: $0000017F VOL: 0
-;PCODE: $00000180 VOL: 0
-;PCODE: $00000181 VOL: 0
-; 0000 015E     lcd_string("Auto ",0);
-;PCODE: $00000182 VOL: 0
-;PCODE: $00000183 VOL: 0
-;PCODE: $00000184 VOL: 0
-;PCODE: $00000185 VOL: 0
-;PCODE: $00000186 VOL: 0
-; 0000 015F   else
-;PCODE: $00000187 VOL: 0
-;PCODE: $00000188 VOL: 0
-; 0000 0160     lcd_string("Force",0);
-;PCODE: $00000189 VOL: 0
-;PCODE: $0000018A VOL: 0
-;PCODE: $0000018B VOL: 0
-;PCODE: $0000018C VOL: 0
-;PCODE: $0000018D VOL: 0
-; 0000 0161 
-; 0000 0162   if (rangemode & RANGE_HIGH)
-;PCODE: $0000018E VOL: 0
-;PCODE: $0000018F VOL: 0
-;PCODE: $00000190 VOL: 0
-;PCODE: $00000191 VOL: 0
-; 0000 0163     lcd_string(" high",16);
-;PCODE: $00000192 VOL: 0
-;PCODE: $00000193 VOL: 0
-;PCODE: $00000194 VOL: 0
-;PCODE: $00000195 VOL: 0
-;PCODE: $00000196 VOL: 0
-; 0000 0164   else
-;PCODE: $00000197 VOL: 0
-;PCODE: $00000198 VOL: 0
-; 0000 0165     lcd_string(" low ",16);
-;PCODE: $00000199 VOL: 0
-;PCODE: $0000019A VOL: 0
-;PCODE: $0000019B VOL: 0
-;PCODE: $0000019C VOL: 0
-;PCODE: $0000019D VOL: 0
-; 0000 0166 
-; 0000 0167   if (rangemode & RANGE_OVERFLOW) {
-;PCODE: $0000019E VOL: 0
-;PCODE: $0000019F VOL: 0
-;PCODE: $000001A0 VOL: 0
-;PCODE: $000001A1 VOL: 0
-; 0000 0168     /* Todo - this smarter */
-; 0000 0169     lcdbuffer[0] = ' ';
-;PCODE: $000001A2 VOL: 0
-;PCODE: $000001A3 VOL: 0
-; 0000 016A     lcdbuffer[1] = ' ';
-;PCODE: $000001A4 VOL: 0
-;PCODE: $000001A5 VOL: 0
-;PCODE: $000001A6 VOL: 0
-; 0000 016B     lcdbuffer[2] = ' ';
-;PCODE: $000001A7 VOL: 0
-;PCODE: $000001A8 VOL: 0
-;PCODE: $000001A9 VOL: 0
-; 0000 016C     lcdbuffer[3] = 'E';
-;PCODE: $000001AA VOL: 0
-;PCODE: $000001AB VOL: 0
-;PCODE: $000001AC VOL: 0
-; 0000 016D     lcdbuffer[4] = 'r';
-;PCODE: $000001AD VOL: 0
-;PCODE: $000001AE VOL: 0
-;PCODE: $000001AF VOL: 0
-; 0000 016E     lcdbuffer[5] = 'r';
-;PCODE: $000001B0 VOL: 0
-;PCODE: $000001B1 VOL: 0
-;PCODE: $000001B2 VOL: 0
-; 0000 016F     lcdbuffer[6] = 'o';
-;PCODE: $000001B3 VOL: 0
-;PCODE: $000001B4 VOL: 0
-;PCODE: $000001B5 VOL: 0
-; 0000 0170     lcdbuffer[7] = 'r';
-;PCODE: $000001B6 VOL: 0
-;PCODE: $000001B7 VOL: 0
-;PCODE: $000001B8 VOL: 0
-; 0000 0171     lcdbuffer[8] = ' ';
-;PCODE: $000001B9 VOL: 0
-;PCODE: $000001BA VOL: 0
-;PCODE: $000001BB VOL: 0
-; 0000 0172     lcdbuffer[9] = 0;
-;PCODE: $000001BC VOL: 0
-;PCODE: $000001BD VOL: 0
-;PCODE: $000001BE VOL: 0
-; 0000 0173   }
-; 0000 0174   else {
-;PCODE: $000001BF VOL: 0
-;PCODE: $000001C0 VOL: 0
-; 0000 0175     /* Select calibration value */
-; 0000 0176     b = rangemode & 3;
-;PCODE: $000001C1 VOL: 0
-;PCODE: $000001C2 VOL: 0
-;PCODE: $000001C3 VOL: 0
-; 0000 0177 
-; 0000 0178     if (calib_offset[b] > value) {
-;PCODE: $000001C4 VOL: 0
-;PCODE: $000001C5 VOL: 0
-;PCODE: $000001C6 VOL: 0
-;PCODE: $000001C7 VOL: 0
-;PCODE: $000001C8 VOL: 0
-;PCODE: $000001C9 VOL: 0
-;PCODE: $000001CA VOL: 0
-;PCODE: $000001CB VOL: 0
-;PCODE: $000001CC VOL: 0
-;PCODE: $000001CD VOL: 0
-; 0000 0179       lcdbuffer[0] = '-';
-;PCODE: $000001CE VOL: 0
-;PCODE: $000001CF VOL: 0
-; 0000 017A       value = calib_offset[b] - value;
-;PCODE: $000001D0 VOL: 0
-;PCODE: $000001D1 VOL: 0
-;PCODE: $000001D2 VOL: 0
-;PCODE: $000001D3 VOL: 0
-;PCODE: $000001D4 VOL: 0
-;PCODE: $000001D5 VOL: 0
-;PCODE: $000001D6 VOL: 0
-;PCODE: $000001D7 VOL: 0
-;PCODE: $000001D8 VOL: 0
-; 0000 017B     }
-; 0000 017C     else {
-;PCODE: $000001D9 VOL: 0
-;PCODE: $000001DA VOL: 0
-; 0000 017D       lcdbuffer[0] = ' ';
-;PCODE: $000001DB VOL: 0
-;PCODE: $000001DC VOL: 0
-; 0000 017E       value = value - calib_offset[b];
-;PCODE: $000001DD VOL: 0
-;PCODE: $000001DE VOL: 0
-;PCODE: $000001DF VOL: 0
-;PCODE: $000001E0 VOL: 0
-;PCODE: $000001E1 VOL: 0
-;PCODE: $000001E2 VOL: 0
-;PCODE: $000001E3 VOL: 0
-;PCODE: $000001E4 VOL: 0
-;PCODE: $000001E5 VOL: 0
-; 0000 017F     }
-;PCODE: $000001E6 VOL: 0
-; 0000 0180 
-; 0000 0181     MUL_LONG_SHORT_S2(value, calib[b], &l);
-;PCODE: $000001E7 VOL: 0
-;PCODE: $000001E8 VOL: 0
-;PCODE: $000001E9 VOL: 0
-;PCODE: $000001EA VOL: 0
-;PCODE: $000001EB VOL: 0
-;PCODE: $000001EC VOL: 0
-;PCODE: $000001ED VOL: 0
-;PCODE: $000001EE VOL: 0
-;PCODE: $000001EF VOL: 0
-;PCODE: $000001F0 VOL: 0
-;PCODE: $000001F1 VOL: 0
-; 0000 0182 
-; 0000 0183     b = long2ascii(lcdbuffer+1, l);
-;PCODE: $000001F2 VOL: 0
+; 0000 01A1 {
 ;PCODE: $000001F3 VOL: 0
 ;PCODE: $000001F4 VOL: 0
+; 0000 01A2   unsigned char b;
+; 0000 01A3   unsigned long l;
+; 0000 01A4 
+; 0000 01A5   if (rangemode & RANGE_AUTO)
 ;PCODE: $000001F5 VOL: 0
 ;PCODE: $000001F6 VOL: 0
 ;PCODE: $000001F7 VOL: 0
-; 0000 0184 
-; 0000 0185     /* High range shifts 1E3 */
-; 0000 0186     if (rangemode & RANGE_HIGH)
+;	value -> Y+5
+;	b -> R17
+;	l -> Y+1
 ;PCODE: $000001F8 VOL: 0
 ;PCODE: $000001F9 VOL: 0
 ;PCODE: $000001FA VOL: 0
-; 0000 0187       b++;
+; 0000 01A6     lcd_string("Auto ", 0);
 ;PCODE: $000001FB VOL: 0
 ;PCODE: $000001FC VOL: 0
-; 0000 0188 
-; 0000 0189     lcdbuffer[6] = ' ';
 ;PCODE: $000001FD VOL: 0
 ;PCODE: $000001FE VOL: 0
 ;PCODE: $000001FF VOL: 0
+; 0000 01A7   else
 ;PCODE: $00000200 VOL: 0
-; 0000 018A     lcdbuffer[7] = decades[b];  /* range = 1 shifts 1E3 */
 ;PCODE: $00000201 VOL: 0
+; 0000 01A8     lcd_string("Force", 0);
 ;PCODE: $00000202 VOL: 0
 ;PCODE: $00000203 VOL: 0
 ;PCODE: $00000204 VOL: 0
 ;PCODE: $00000205 VOL: 0
 ;PCODE: $00000206 VOL: 0
-; 0000 018B     lcdbuffer[8] = 'F';
+; 0000 01A9 
+; 0000 01AA   if (rangemode & RANGE_HIGH)
 ;PCODE: $00000207 VOL: 0
 ;PCODE: $00000208 VOL: 0
 ;PCODE: $00000209 VOL: 0
-; 0000 018C     lcdbuffer[9] = 0;
 ;PCODE: $0000020A VOL: 0
+; 0000 01AB     lcd_string(" high", 16);
 ;PCODE: $0000020B VOL: 0
 ;PCODE: $0000020C VOL: 0
-; 0000 018D   }
 ;PCODE: $0000020D VOL: 0
-; 0000 018E 
-; 0000 018F   /* Write high threshold in first line, low threshold in second */
-; 0000 0190   if (rangemode & RANGE_HIGH_THRESH)
 ;PCODE: $0000020E VOL: 0
 ;PCODE: $0000020F VOL: 0
+; 0000 01AC   else
 ;PCODE: $00000210 VOL: 0
-; 0000 0191     b=7;
 ;PCODE: $00000211 VOL: 0
+; 0000 01AD     lcd_string(" low ", 16);
 ;PCODE: $00000212 VOL: 0
-; 0000 0192   else
 ;PCODE: $00000213 VOL: 0
 ;PCODE: $00000214 VOL: 0
-; 0000 0193     b=23;
 ;PCODE: $00000215 VOL: 0
 ;PCODE: $00000216 VOL: 0
-; 0000 0194 
-; 0000 0195   lcd_string(lcdbuffer,b);
+; 0000 01AE 
+; 0000 01AF   if (rangemode & RANGE_OVERFLOW)
 ;PCODE: $00000217 VOL: 0
 ;PCODE: $00000218 VOL: 0
 ;PCODE: $00000219 VOL: 0
 ;PCODE: $0000021A VOL: 0
+; 0000 01B0   {
+; 0000 01B1     /* Todo - this smarter */
+; 0000 01B2     lcdbuffer[0] = ' ';
 ;PCODE: $0000021B VOL: 0
-; 0000 0196 }
 ;PCODE: $0000021C VOL: 0
+; 0000 01B3     lcdbuffer[1] = ' ';
 ;PCODE: $0000021D VOL: 0
 ;PCODE: $0000021E VOL: 0
 ;PCODE: $0000021F VOL: 0
+; 0000 01B4     lcdbuffer[2] = ' ';
 ;PCODE: $00000220 VOL: 0
-
-	.DSEG
-_0x2B:
-	.BYTE 0x18
-;
-;void calibrate_zero(void)
-; 0000 0199 {
-
-	.CSEG
 ;PCODE: $00000221 VOL: 0
 ;PCODE: $00000222 VOL: 0
-; 0000 019A   char oldrange = rangemode;
-; 0000 019B   unsigned long l;
-; 0000 019C 
-; 0000 019D   rangemode = 0;
+; 0000 01B5     lcdbuffer[3] = 'E';
 ;PCODE: $00000223 VOL: 0
 ;PCODE: $00000224 VOL: 0
-;	oldrange -> R17
-;	l -> Y+1
 ;PCODE: $00000225 VOL: 0
+; 0000 01B6     lcdbuffer[4] = 'r';
 ;PCODE: $00000226 VOL: 0
 ;PCODE: $00000227 VOL: 0
-; 0000 019E 
-; 0000 019F   l = measure();
 ;PCODE: $00000228 VOL: 0
+; 0000 01B7     lcdbuffer[5] = 'r';
 ;PCODE: $00000229 VOL: 0
-; 0000 01A0   l = measure();
 ;PCODE: $0000022A VOL: 0
 ;PCODE: $0000022B VOL: 0
-; 0000 01A1 
-; 0000 01A2   calib_offset[rangemode] = l;
+; 0000 01B8     lcdbuffer[6] = 'o';
 ;PCODE: $0000022C VOL: 0
 ;PCODE: $0000022D VOL: 0
 ;PCODE: $0000022E VOL: 0
+; 0000 01B9     lcdbuffer[7] = 'r';
 ;PCODE: $0000022F VOL: 0
 ;PCODE: $00000230 VOL: 0
 ;PCODE: $00000231 VOL: 0
+; 0000 01BA     lcdbuffer[8] = ' ';
 ;PCODE: $00000232 VOL: 0
-; 0000 01A3 
-; 0000 01A4   rangemode = RANGE_HIGH_THRESH;
 ;PCODE: $00000233 VOL: 0
 ;PCODE: $00000234 VOL: 0
-; 0000 01A5 
-; 0000 01A6   l = measure();
+; 0000 01BB     lcdbuffer[9] = 0;
 ;PCODE: $00000235 VOL: 0
 ;PCODE: $00000236 VOL: 0
-; 0000 01A7   l = measure();
 ;PCODE: $00000237 VOL: 0
+; 0000 01BC   }
+; 0000 01BD   else
 ;PCODE: $00000238 VOL: 0
-; 0000 01A8 
-; 0000 01A9   calib_offset[rangemode] = l;
 ;PCODE: $00000239 VOL: 0
+; 0000 01BE   {
+; 0000 01BF     /* Select calibration value */
+; 0000 01C0     b = rangemode & 3;
 ;PCODE: $0000023A VOL: 0
 ;PCODE: $0000023B VOL: 0
 ;PCODE: $0000023C VOL: 0
+; 0000 01C1 
+; 0000 01C2     if (calib_offset[b] > value)
 ;PCODE: $0000023D VOL: 0
 ;PCODE: $0000023E VOL: 0
 ;PCODE: $0000023F VOL: 0
-; 0000 01AA 
-; 0000 01AB   rangemode = oldrange;
 ;PCODE: $00000240 VOL: 0
 ;PCODE: $00000241 VOL: 0
-; 0000 01AC 
-; 0000 01AD }
 ;PCODE: $00000242 VOL: 0
 ;PCODE: $00000243 VOL: 0
 ;PCODE: $00000244 VOL: 0
 ;PCODE: $00000245 VOL: 0
 ;PCODE: $00000246 VOL: 0
-;
-;void calibrate(void)
-; 0000 01B0 {
+; 0000 01C3     {
+; 0000 01C4       lcdbuffer[0] = '-';
 ;PCODE: $00000247 VOL: 0
 ;PCODE: $00000248 VOL: 0
-; 0000 01B1   char oldrange = rangemode;
-; 0000 01B2   unsigned long value;
-; 0000 01B3 
-; 0000 01B4   rangemode = 0;
+; 0000 01C5       value = calib_offset[b] - value;
 ;PCODE: $00000249 VOL: 0
 ;PCODE: $0000024A VOL: 0
-;	oldrange -> R17
-;	value -> Y+1
 ;PCODE: $0000024B VOL: 0
 ;PCODE: $0000024C VOL: 0
 ;PCODE: $0000024D VOL: 0
-; 0000 01B5   value = measure();
 ;PCODE: $0000024E VOL: 0
 ;PCODE: $0000024F VOL: 0
-; 0000 01B6   value -= calib_offset[rangemode];
 ;PCODE: $00000250 VOL: 0
 ;PCODE: $00000251 VOL: 0
+; 0000 01C6     }
+; 0000 01C7     else
 ;PCODE: $00000252 VOL: 0
 ;PCODE: $00000253 VOL: 0
+; 0000 01C8     {
+; 0000 01C9       lcdbuffer[0] = ' ';
 ;PCODE: $00000254 VOL: 0
 ;PCODE: $00000255 VOL: 0
+; 0000 01CA       value = value - calib_offset[b];
 ;PCODE: $00000256 VOL: 0
 ;PCODE: $00000257 VOL: 0
 ;PCODE: $00000258 VOL: 0
-; 0000 01B7   calib[rangemode] = CALIB_LOW / (value>>8) + 1;
 ;PCODE: $00000259 VOL: 0
 ;PCODE: $0000025A VOL: 0
 ;PCODE: $0000025B VOL: 0
 ;PCODE: $0000025C VOL: 0
 ;PCODE: $0000025D VOL: 0
 ;PCODE: $0000025E VOL: 0
+; 0000 01CB     }
 ;PCODE: $0000025F VOL: 0
+; 0000 01CC     // sprintf(buf, "before mul : %u", 2);  // or whatever variable
+; 0000 01CD     // lcd_string(buf,0);
+; 0000 01CE     // delay_ms(1000);
+; 0000 01CF     MUL_LONG_SHORT_S2(value, calib[b], &l);
 ;PCODE: $00000260 VOL: 0
 ;PCODE: $00000261 VOL: 0
 ;PCODE: $00000262 VOL: 0
@@ -1098,135 +1114,172 @@ _0x2B:
 ;PCODE: $00000264 VOL: 0
 ;PCODE: $00000265 VOL: 0
 ;PCODE: $00000266 VOL: 0
-; 0000 01B8 
-; 0000 01B9   rangemode = RANGE_HIGH_THRESH;
 ;PCODE: $00000267 VOL: 0
 ;PCODE: $00000268 VOL: 0
-; 0000 01BA   value = measure();
 ;PCODE: $00000269 VOL: 0
 ;PCODE: $0000026A VOL: 0
-; 0000 01BB   value -= calib_offset[rangemode];
+; 0000 01D0     // sprintf(buf, "after mul: %u", l);  // or whatever variable
+; 0000 01D1     // lcd_string(buf,0);
+; 0000 01D2     // delay_ms(1000);
+; 0000 01D3     b = long2ascii(lcdbuffer + 1, l);
 ;PCODE: $0000026B VOL: 0
 ;PCODE: $0000026C VOL: 0
 ;PCODE: $0000026D VOL: 0
 ;PCODE: $0000026E VOL: 0
 ;PCODE: $0000026F VOL: 0
 ;PCODE: $00000270 VOL: 0
+; 0000 01D4 
+; 0000 01D5     /* High range shifts 1E3 */
+; 0000 01D6     if (rangemode & RANGE_HIGH)
 ;PCODE: $00000271 VOL: 0
 ;PCODE: $00000272 VOL: 0
 ;PCODE: $00000273 VOL: 0
-; 0000 01BC   calib[rangemode] = CALIB_LOW / (value>>8) + 1;
+; 0000 01D7       b++;
 ;PCODE: $00000274 VOL: 0
 ;PCODE: $00000275 VOL: 0
+; 0000 01D8 
+; 0000 01D9     lcdbuffer[6] = ' ';
 ;PCODE: $00000276 VOL: 0
 ;PCODE: $00000277 VOL: 0
 ;PCODE: $00000278 VOL: 0
 ;PCODE: $00000279 VOL: 0
+; 0000 01DA     lcdbuffer[7] = decades[b]; /* range = 1 shifts 1E3 */
 ;PCODE: $0000027A VOL: 0
 ;PCODE: $0000027B VOL: 0
 ;PCODE: $0000027C VOL: 0
 ;PCODE: $0000027D VOL: 0
 ;PCODE: $0000027E VOL: 0
 ;PCODE: $0000027F VOL: 0
+; 0000 01DB     lcdbuffer[8] = 'F';
 ;PCODE: $00000280 VOL: 0
 ;PCODE: $00000281 VOL: 0
-; 0000 01BD 
-; 0000 01BE   rangemode = RANGE_HIGH;
 ;PCODE: $00000282 VOL: 0
+; 0000 01DC     lcdbuffer[9] = 0;
 ;PCODE: $00000283 VOL: 0
-; 0000 01BF   value = measure();
 ;PCODE: $00000284 VOL: 0
 ;PCODE: $00000285 VOL: 0
-; 0000 01C0   value -= calib_offset[rangemode];
+; 0000 01DD   }
 ;PCODE: $00000286 VOL: 0
+; 0000 01DE     // sprintf(buf, "after ascii: %u", decades[b]); // or whatever variable
+; 0000 01DF     //lcd_string(buf, 0);
+; 0000 01E0     //delay_ms(1000);
+; 0000 01E1   /* Write high threshold in first line, low threshold in second */
+; 0000 01E2   if (rangemode & RANGE_HIGH_THRESH)
 ;PCODE: $00000287 VOL: 0
 ;PCODE: $00000288 VOL: 0
 ;PCODE: $00000289 VOL: 0
+; 0000 01E3     b = 7;
 ;PCODE: $0000028A VOL: 0
 ;PCODE: $0000028B VOL: 0
+; 0000 01E4   else
 ;PCODE: $0000028C VOL: 0
 ;PCODE: $0000028D VOL: 0
+; 0000 01E5     b = 23;
 ;PCODE: $0000028E VOL: 0
-; 0000 01C1   calib[rangemode] = CALIB_HIGH / value + 1;
 ;PCODE: $0000028F VOL: 0
+; 0000 01E6    // sprintf(buf, "%u", lcdbuffer);  // or whatever variable
+; 0000 01E7     //lcd_string(buf,b);
+; 0000 01E8   lcd_string(lcdbuffer, b);
 ;PCODE: $00000290 VOL: 0
 ;PCODE: $00000291 VOL: 0
 ;PCODE: $00000292 VOL: 0
 ;PCODE: $00000293 VOL: 0
 ;PCODE: $00000294 VOL: 0
+; 0000 01E9 
+; 0000 01EA }
 ;PCODE: $00000295 VOL: 0
 ;PCODE: $00000296 VOL: 0
 ;PCODE: $00000297 VOL: 0
 ;PCODE: $00000298 VOL: 0
 ;PCODE: $00000299 VOL: 0
+
+	.DSEG
+_0x43:
+	.BYTE 0x18
+;
+;void calibrate_zero(void)
+; 0000 01ED {
+
+	.CSEG
 ;PCODE: $0000029A VOL: 0
-; 0000 01C2 
-; 0000 01C3   rangemode = RANGE_HIGH | RANGE_HIGH_THRESH;
 ;PCODE: $0000029B VOL: 0
+; 0000 01EE   char oldrange = rangemode;
+; 0000 01EF   unsigned long l;
+; 0000 01F0 
+; 0000 01F1   rangemode = 0;
 ;PCODE: $0000029C VOL: 0
-; 0000 01C4   value = measure();
 ;PCODE: $0000029D VOL: 0
+;	oldrange -> R17
+;	l -> Y+1
 ;PCODE: $0000029E VOL: 0
-; 0000 01C5   value -= calib_offset[rangemode];
 ;PCODE: $0000029F VOL: 0
 ;PCODE: $000002A0 VOL: 0
+; 0000 01F2 
+; 0000 01F3   l = measure();
 ;PCODE: $000002A1 VOL: 0
 ;PCODE: $000002A2 VOL: 0
+; 0000 01F4   l = measure();
 ;PCODE: $000002A3 VOL: 0
 ;PCODE: $000002A4 VOL: 0
+; 0000 01F5 
+; 0000 01F6   calib_offset[rangemode] = l;
 ;PCODE: $000002A5 VOL: 0
 ;PCODE: $000002A6 VOL: 0
 ;PCODE: $000002A7 VOL: 0
-; 0000 01C6   calib[rangemode] = CALIB_HIGH / value + 1;
 ;PCODE: $000002A8 VOL: 0
 ;PCODE: $000002A9 VOL: 0
 ;PCODE: $000002AA VOL: 0
 ;PCODE: $000002AB VOL: 0
+; 0000 01F7 
+; 0000 01F8   rangemode = RANGE_HIGH_THRESH;
 ;PCODE: $000002AC VOL: 0
 ;PCODE: $000002AD VOL: 0
+; 0000 01F9 
+; 0000 01FA   l = measure();
 ;PCODE: $000002AE VOL: 0
 ;PCODE: $000002AF VOL: 0
+; 0000 01FB   l = measure();
 ;PCODE: $000002B0 VOL: 0
 ;PCODE: $000002B1 VOL: 0
+; 0000 01FC 
+; 0000 01FD   calib_offset[rangemode] = l;
 ;PCODE: $000002B2 VOL: 0
 ;PCODE: $000002B3 VOL: 0
-; 0000 01C7 
-; 0000 01C8   rangemode = oldrange;
 ;PCODE: $000002B4 VOL: 0
 ;PCODE: $000002B5 VOL: 0
-; 0000 01C9 
-; 0000 01CA }
 ;PCODE: $000002B6 VOL: 0
 ;PCODE: $000002B7 VOL: 0
 ;PCODE: $000002B8 VOL: 0
+; 0000 01FE 
+; 0000 01FF   rangemode = oldrange;
 ;PCODE: $000002B9 VOL: 0
 ;PCODE: $000002BA VOL: 0
-;
-;/* Hold-down-button menu implementation: */
-;
-;char menu(void)
-; 0000 01CF {
+; 0000 0200 }
 ;PCODE: $000002BB VOL: 0
 ;PCODE: $000002BC VOL: 0
-; 0000 01D0   unsigned char i;
-; 0000 01D1 
-; 0000 01D2   lcd_clear();
 ;PCODE: $000002BD VOL: 0
-;	i -> R17
 ;PCODE: $000002BE VOL: 0
-; 0000 01D3 
-; 0000 01D4   for (i=0; i<MENU_ITEMS; i++) {
 ;PCODE: $000002BF VOL: 0
+;
+;void calibrate(void)
+; 0000 0203 {
 ;PCODE: $000002C0 VOL: 0
 ;PCODE: $000002C1 VOL: 0
+; 0000 0204   char oldrange = rangemode;
+; 0000 0205   unsigned long value;
+; 0000 0206 
+; 0000 0207   rangemode = 0;
 ;PCODE: $000002C2 VOL: 0
 ;PCODE: $000002C3 VOL: 0
+;	oldrange -> R17
+;	value -> Y+1
 ;PCODE: $000002C4 VOL: 0
 ;PCODE: $000002C5 VOL: 0
 ;PCODE: $000002C6 VOL: 0
+; 0000 0208   value = measure();
 ;PCODE: $000002C7 VOL: 0
-; 0000 01D5     lcd_string(menu_item[i],0);
 ;PCODE: $000002C8 VOL: 0
+; 0000 0209   value -= calib_offset[rangemode];
 ;PCODE: $000002C9 VOL: 0
 ;PCODE: $000002CA VOL: 0
 ;PCODE: $000002CB VOL: 0
@@ -1235,58 +1288,43 @@ _0x2B:
 ;PCODE: $000002CE VOL: 0
 ;PCODE: $000002CF VOL: 0
 ;PCODE: $000002D0 VOL: 0
-; 0000 01D6     delay_ms(MENU_SPEED);
 ;PCODE: $000002D1 VOL: 0
+; 0000 020A   calib[rangemode] = CALIB_LOW / (value >> 8) + 1;
 ;PCODE: $000002D2 VOL: 0
-; 0000 01D7 
-; 0000 01D8     if (!BUTTON_PUSHED)
 ;PCODE: $000002D3 VOL: 0
 ;PCODE: $000002D4 VOL: 0
 ;PCODE: $000002D5 VOL: 0
-; 0000 01D9       break;
 ;PCODE: $000002D6 VOL: 0
-; 0000 01DA 
-; 0000 01DB   }
 ;PCODE: $000002D7 VOL: 0
 ;PCODE: $000002D8 VOL: 0
 ;PCODE: $000002D9 VOL: 0
 ;PCODE: $000002DA VOL: 0
 ;PCODE: $000002DB VOL: 0
 ;PCODE: $000002DC VOL: 0
-; 0000 01DC 
-; 0000 01DD   if (i == MENU_ITEMS) {
 ;PCODE: $000002DD VOL: 0
 ;PCODE: $000002DE VOL: 0
 ;PCODE: $000002DF VOL: 0
-; 0000 01DE     /* Just clear display, if user went out of menu */
-; 0000 01DF     lcd_clear();
+; 0000 020B 
+; 0000 020C   rangemode = RANGE_HIGH_THRESH;
 ;PCODE: $000002E0 VOL: 0
-; 0000 01E0 
-; 0000 01E1     /* Wait for release of button */
-; 0000 01E2     while (BUTTON_PUSHED);
 ;PCODE: $000002E1 VOL: 0
+; 0000 020D   value = measure();
 ;PCODE: $000002E2 VOL: 0
 ;PCODE: $000002E3 VOL: 0
+; 0000 020E   value -= calib_offset[rangemode];
 ;PCODE: $000002E4 VOL: 0
 ;PCODE: $000002E5 VOL: 0
 ;PCODE: $000002E6 VOL: 0
-; 0000 01E3     delay_ms(10);
 ;PCODE: $000002E7 VOL: 0
 ;PCODE: $000002E8 VOL: 0
 ;PCODE: $000002E9 VOL: 0
-; 0000 01E4 
-; 0000 01E5   }
-; 0000 01E6   else {
 ;PCODE: $000002EA VOL: 0
 ;PCODE: $000002EB VOL: 0
-; 0000 01E7     /* Flash selected item */
-; 0000 01E8     lcd_clear();
 ;PCODE: $000002EC VOL: 0
-; 0000 01E9     delay_ms(MENU_SPEED >> 2);
+; 0000 020F   calib[rangemode] = CALIB_LOW / (value >> 8) + 1;
 ;PCODE: $000002ED VOL: 0
 ;PCODE: $000002EE VOL: 0
 ;PCODE: $000002EF VOL: 0
-; 0000 01EA     lcd_string(menu_item[i],0);
 ;PCODE: $000002F0 VOL: 0
 ;PCODE: $000002F1 VOL: 0
 ;PCODE: $000002F2 VOL: 0
@@ -1296,370 +1334,535 @@ _0x2B:
 ;PCODE: $000002F6 VOL: 0
 ;PCODE: $000002F7 VOL: 0
 ;PCODE: $000002F8 VOL: 0
-; 0000 01EB     delay_ms(MENU_SPEED >> 1);
 ;PCODE: $000002F9 VOL: 0
 ;PCODE: $000002FA VOL: 0
-; 0000 01EC     lcd_clear();
+; 0000 0210 
+; 0000 0211   rangemode = RANGE_HIGH;
 ;PCODE: $000002FB VOL: 0
-; 0000 01ED     delay_ms(MENU_SPEED >> 2);
 ;PCODE: $000002FC VOL: 0
+; 0000 0212   value = measure();
 ;PCODE: $000002FD VOL: 0
 ;PCODE: $000002FE VOL: 0
-; 0000 01EE 
-; 0000 01EF   }
+; 0000 0213   value -= calib_offset[rangemode];
 ;PCODE: $000002FF VOL: 0
-; 0000 01F0 
-; 0000 01F1   return i;
 ;PCODE: $00000300 VOL: 0
 ;PCODE: $00000301 VOL: 0
 ;PCODE: $00000302 VOL: 0
-; 0000 01F2 }
 ;PCODE: $00000303 VOL: 0
-;
-;void init(void)
-; 0000 01F5 {
 ;PCODE: $00000304 VOL: 0
 ;PCODE: $00000305 VOL: 0
-; 0000 01F6 
-; 0000 01F7   /* Set datadirections */
-; 0000 01F8   DDRD = (1<<4); /* led output, rest input */
 ;PCODE: $00000306 VOL: 0
 ;PCODE: $00000307 VOL: 0
-; 0000 01F9   PORTD &= ~(1<<6); /* AIN0 port must be 0 */
+; 0000 0214   calib[rangemode] = CALIB_HIGH / value + 1;
 ;PCODE: $00000308 VOL: 0
 ;PCODE: $00000309 VOL: 0
-; 0000 01FA 
-; 0000 01FB   /* Enable button pull up resistor */
-; 0000 01FC   PORTD |= (1<<2);
 ;PCODE: $0000030A VOL: 0
 ;PCODE: $0000030B VOL: 0
-; 0000 01FD 
-; 0000 01FE   /* Setup timer1 to normal operation */
-; 0000 01FF   TCCR1A = 0;
 ;PCODE: $0000030C VOL: 0
 ;PCODE: $0000030D VOL: 0
-; 0000 0200   TCCR1B = 0;
 ;PCODE: $0000030E VOL: 0
 ;PCODE: $0000030F VOL: 0
-; 0000 0201   TIMSK = (1<<TOIE1); //(mega8)
 ;PCODE: $00000310 VOL: 0
 ;PCODE: $00000311 VOL: 0
-; 0000 0202   //TIMSK1 = (1<<TOIE1); //(mega48/88/168)
-; 0000 0203 
-; 0000 0204 
-; 0000 0205   /* Setup analog comperator to generate rising edge interrupt */
-; 0000 0206   ACSR = (1<<ACIS0)|(1<<ACIS1)|(1<<ACIE);
 ;PCODE: $00000312 VOL: 0
 ;PCODE: $00000313 VOL: 0
-; 0000 0207 
-; 0000 0208   /* Setup analog comperator to use ADMUX */
-; 0000 0209   ADMUX = ADMUX_LOW;
+; 0000 0215 
+; 0000 0216   rangemode = RANGE_HIGH | RANGE_HIGH_THRESH;
 ;PCODE: $00000314 VOL: 0
 ;PCODE: $00000315 VOL: 0
-; 0000 020A   SFIOR |= (1<<ACME);
+; 0000 0217   value = measure();
 ;PCODE: $00000316 VOL: 0
 ;PCODE: $00000317 VOL: 0
+; 0000 0218   value -= calib_offset[rangemode];
 ;PCODE: $00000318 VOL: 0
-; 0000 020B   //ADCSRB |= (1<<ACME);
-; 0000 020C   //DIDR1 |= (1<<AIN1D)|(1<<AIN0D);
-; 0000 020D 
-; 0000 020E }
 ;PCODE: $00000319 VOL: 0
 ;PCODE: $0000031A VOL: 0
-;
-;
-;
-;void main(void)
-; 0000 0213 {
 ;PCODE: $0000031B VOL: 0
-; 0000 0214 
-; 0000 0215 // Declare your local variables here
-; 0000 0216 unsigned long l;
-; 0000 0217 
-; 0000 0218 // Input/Output Ports initialization
-; 0000 0219 // Port B initialization
-; 0000 021A // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-; 0000 021B DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
 ;PCODE: $0000031C VOL: 0
-;	l -> Y+0
 ;PCODE: $0000031D VOL: 0
 ;PCODE: $0000031E VOL: 0
-; 0000 021C // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
-; 0000 021D PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
 ;PCODE: $0000031F VOL: 0
 ;PCODE: $00000320 VOL: 0
-; 0000 021E 
-; 0000 021F // Port C initialization
-; 0000 0220 // Function: Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
-; 0000 0221 DDRC=(0<<DDC6) | (0<<DDC5) | (0<<DDC4) | (0<<DDC3) | (0<<DDC2) | (0<<DDC1) | (0<<DDC0);
+; 0000 0219   calib[rangemode] = CALIB_HIGH / value + 1;
 ;PCODE: $00000321 VOL: 0
 ;PCODE: $00000322 VOL: 0
-; 0000 0222 // State: Bit6=T Bit5=T Bit4=T Bit3=T Bit2=T Bit1=T Bit0=T
-; 0000 0223 PORTC=(0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
 ;PCODE: $00000323 VOL: 0
 ;PCODE: $00000324 VOL: 0
-; 0000 0224 
-; 0000 0225 // Port D initialization
-; 0000 0226 // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
-; 0000 0227 DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
 ;PCODE: $00000325 VOL: 0
 ;PCODE: $00000326 VOL: 0
-; 0000 0228 // State: Bit7=T Bit6=T Bit5=T Bit4=T Bit3=T Bit2=T Bit1=T Bit0=T
-; 0000 0229 PORTD=(0<<PORTD7) | (0<<PORTD6) | (0<<PORTD5) | (0<<PORTD4) | (0<<PORTD3) | (0<<PORTD2) | (0<<PORTD1) | (0<<PORTD0);
 ;PCODE: $00000327 VOL: 0
 ;PCODE: $00000328 VOL: 0
-; 0000 022A 
-; 0000 022B // Timer/Counter 0 initialization
-; 0000 022C // Clock source: System Clock
-; 0000 022D // Clock value: Timer 0 Stopped
-; 0000 022E TCCR0=(0<<CS02) | (0<<CS01) | (0<<CS00);
 ;PCODE: $00000329 VOL: 0
 ;PCODE: $0000032A VOL: 0
-; 0000 022F TCNT0=0x00;
 ;PCODE: $0000032B VOL: 0
 ;PCODE: $0000032C VOL: 0
-; 0000 0230 
-; 0000 0231 // Timer/Counter 1 initialization
-; 0000 0232 // Clock source: System Clock
-; 0000 0233 // Clock value: Timer1 Stopped
-; 0000 0234 // Mode: Normal top=0xFFFF
-; 0000 0235 // OC1A output: Disconnected
-; 0000 0236 // OC1B output: Disconnected
-; 0000 0237 // Noise Canceler: Off
-; 0000 0238 // Input Capture on Falling Edge
-; 0000 0239 // Timer1 Overflow Interrupt: Off
-; 0000 023A // Input Capture Interrupt: Off
-; 0000 023B // Compare A Match Interrupt: Off
-; 0000 023C // Compare B Match Interrupt: Off
-; 0000 023D TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+; 0000 021A 
+; 0000 021B   rangemode = oldrange;
 ;PCODE: $0000032D VOL: 0
 ;PCODE: $0000032E VOL: 0
-; 0000 023E TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (0<<CS11) | (0<<CS10);
+; 0000 021C }
 ;PCODE: $0000032F VOL: 0
 ;PCODE: $00000330 VOL: 0
-; 0000 023F TCNT1H=0x00;
 ;PCODE: $00000331 VOL: 0
 ;PCODE: $00000332 VOL: 0
-; 0000 0240 TCNT1L=0x00;
 ;PCODE: $00000333 VOL: 0
+;
+;/* Hold-down-button menu implementation: */
+;
+;char menu(void)
+; 0000 0221 {
 ;PCODE: $00000334 VOL: 0
-; 0000 0241 ICR1H=0x00;
 ;PCODE: $00000335 VOL: 0
+; 0000 0222   unsigned char i;
+; 0000 0223 
+; 0000 0224   lcd_clear();
 ;PCODE: $00000336 VOL: 0
-; 0000 0242 ICR1L=0x00;
+;	i -> R17
 ;PCODE: $00000337 VOL: 0
+; 0000 0225 
+; 0000 0226   for (i = 0; i < MENU_ITEMS; i++)
 ;PCODE: $00000338 VOL: 0
-; 0000 0243 OCR1AH=0x00;
 ;PCODE: $00000339 VOL: 0
 ;PCODE: $0000033A VOL: 0
-; 0000 0244 OCR1AL=0x00;
 ;PCODE: $0000033B VOL: 0
 ;PCODE: $0000033C VOL: 0
-; 0000 0245 OCR1BH=0x00;
 ;PCODE: $0000033D VOL: 0
 ;PCODE: $0000033E VOL: 0
-; 0000 0246 OCR1BL=0x00;
 ;PCODE: $0000033F VOL: 0
 ;PCODE: $00000340 VOL: 0
-; 0000 0247 
-; 0000 0248 // Timer/Counter 2 initialization
-; 0000 0249 // Clock source: System Clock
-; 0000 024A // Clock value: Timer2 Stopped
-; 0000 024B // Mode: Normal top=0xFF
-; 0000 024C // OC2 output: Disconnected
-; 0000 024D ASSR=0<<AS2;
+; 0000 0227   {
+; 0000 0228     lcd_string(menu_item[i], 0);
 ;PCODE: $00000341 VOL: 0
 ;PCODE: $00000342 VOL: 0
-; 0000 024E TCCR2=(0<<PWM2) | (0<<COM21) | (0<<COM20) | (0<<CTC2) | (0<<CS22) | (0<<CS21) | (0<<CS20);
 ;PCODE: $00000343 VOL: 0
 ;PCODE: $00000344 VOL: 0
-; 0000 024F TCNT2=0x00;
 ;PCODE: $00000345 VOL: 0
 ;PCODE: $00000346 VOL: 0
-; 0000 0250 OCR2=0x00;
 ;PCODE: $00000347 VOL: 0
 ;PCODE: $00000348 VOL: 0
-; 0000 0251 
-; 0000 0252 // Timer(s)/Counter(s) Interrupt(s) initialization
-; 0000 0253 TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1) | (0<<TOIE0);
 ;PCODE: $00000349 VOL: 0
+; 0000 0229     delay_ms(MENU_SPEED);
 ;PCODE: $0000034A VOL: 0
-; 0000 0254 
-; 0000 0255 // External Interrupt(s) initialization
-; 0000 0256 // INT0: Off
-; 0000 0257 // INT1: Off
-; 0000 0258 MCUCR=(0<<ISC11) | (0<<ISC10) | (0<<ISC01) | (0<<ISC00);
 ;PCODE: $0000034B VOL: 0
+; 0000 022A 
+; 0000 022B     if (!BUTTON_PUSHED)
 ;PCODE: $0000034C VOL: 0
-; 0000 0259 
-; 0000 025A // USART initialization
-; 0000 025B // USART disabled
-; 0000 025C UCSRB=(0<<RXCIE) | (0<<TXCIE) | (0<<UDRIE) | (0<<RXEN) | (0<<TXEN) | (0<<UCSZ2) | (0<<RXB8) | (0<<TXB8);
 ;PCODE: $0000034D VOL: 0
 ;PCODE: $0000034E VOL: 0
-; 0000 025D 
-; 0000 025E // Analog Comparator initialization
-; 0000 025F // Analog Comparator: Off
-; 0000 0260 // The Analog Comparator's positive input is
-; 0000 0261 // connected to the AIN0 pin
-; 0000 0262 // The Analog Comparator's negative input is
-; 0000 0263 // connected to the AIN1 pin
-; 0000 0264 ACSR=(1<<ACD) | (0<<ACBG) | (0<<ACO) | (0<<ACI) | (0<<ACIE) | (0<<ACIC) | (0<<ACIS1) | (0<<ACIS0);
+; 0000 022C       break;
 ;PCODE: $0000034F VOL: 0
+; 0000 022D   }
 ;PCODE: $00000350 VOL: 0
-; 0000 0265 SFIOR=(0<<ACME);
 ;PCODE: $00000351 VOL: 0
 ;PCODE: $00000352 VOL: 0
-; 0000 0266 
-; 0000 0267 // ADC initialization
-; 0000 0268 // ADC disabled
-; 0000 0269 ADCSRA=(0<<ADEN) | (0<<ADSC) | (0<<ADFR) | (0<<ADIF) | (0<<ADIE) | (0<<ADPS2) | (0<<ADPS1) | (0<<ADPS0);
 ;PCODE: $00000353 VOL: 0
 ;PCODE: $00000354 VOL: 0
-; 0000 026A 
-; 0000 026B // SPI initialization
-; 0000 026C // SPI disabled
-; 0000 026D SPCR=(0<<SPIE) | (0<<SPE) | (0<<DORD) | (0<<MSTR) | (0<<CPOL) | (0<<CPHA) | (0<<SPR1) | (0<<SPR0);
 ;PCODE: $00000355 VOL: 0
+; 0000 022E 
+; 0000 022F   if (i == MENU_ITEMS)
 ;PCODE: $00000356 VOL: 0
-; 0000 026E 
-; 0000 026F // TWI initialization
-; 0000 0270 // TWI disabled
-; 0000 0271 TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 ;PCODE: $00000357 VOL: 0
 ;PCODE: $00000358 VOL: 0
-; 0000 0272 
-; 0000 0273 
-; 0000 0274 
-; 0000 0275 lcd_init(8);
+; 0000 0230   {
+; 0000 0231     /* Just clear display, if user went out of menu */
+; 0000 0232     lcd_clear();
 ;PCODE: $00000359 VOL: 0
+; 0000 0233 
+; 0000 0234     /* Wait for release of button */
+; 0000 0235     while (BUTTON_PUSHED)
 ;PCODE: $0000035A VOL: 0
-; 0000 0276 
-; 0000 0277 
-; 0000 0278 
-; 0000 0279 init(); //init peripherals/adc/timers/etc..
 ;PCODE: $0000035B VOL: 0
-; 0000 027A 
-; 0000 027B eeprom_read(); //reads calibration values or settings from EEPROM.
 ;PCODE: $0000035C VOL: 0
-; 0000 027C 
-; 0000 027D #asm("sei"); //enables global interrupts
 ;PCODE: $0000035D VOL: 0
-	sei
+; 0000 0236       ;
 ;PCODE: $0000035E VOL: 0
-; 0000 027E 
-; 0000 027F LED_OFF; //turns off an LED (probably an indicator for measurement status).
 ;PCODE: $0000035F VOL: 0
+; 0000 0237     delay_ms(10);
 ;PCODE: $00000360 VOL: 0
-; 0000 0280 
-; 0000 0281 rangemode = RANGE_AUTO; //setting Up the Measurement Mode
 ;PCODE: $00000361 VOL: 0
 ;PCODE: $00000362 VOL: 0
-; 0000 0282 
-; 0000 0283 
-; 0000 0284 while (1) {
+; 0000 0238   }
+; 0000 0239   else
 ;PCODE: $00000363 VOL: 0
-; 0000 0285       /* Toggle high/low threshold */
-; 0000 0286       rangemode ^= RANGE_HIGH_THRESH;
 ;PCODE: $00000364 VOL: 0
+; 0000 023A   {
+; 0000 023B     /* Flash selected item */
+; 0000 023C     lcd_clear();
 ;PCODE: $00000365 VOL: 0
+; 0000 023D     delay_ms(MENU_SPEED >> 2);
 ;PCODE: $00000366 VOL: 0
-; 0000 0287       l = measure();
 ;PCODE: $00000367 VOL: 0
 ;PCODE: $00000368 VOL: 0
-; 0000 0288       if (BUTTON_PUSHED) {
+; 0000 023E     lcd_string(menu_item[i], 0);
 ;PCODE: $00000369 VOL: 0
 ;PCODE: $0000036A VOL: 0
 ;PCODE: $0000036B VOL: 0
-; 0000 0289         /* Stop any cap. charging */
-; 0000 028A         LED_OFF;
 ;PCODE: $0000036C VOL: 0
 ;PCODE: $0000036D VOL: 0
-; 0000 028B         LOW_RANGE;
 ;PCODE: $0000036E VOL: 0
 ;PCODE: $0000036F VOL: 0
 ;PCODE: $00000370 VOL: 0
 ;PCODE: $00000371 VOL: 0
-; 0000 028C         DISCHARGE_ON;
+; 0000 023F     delay_ms(MENU_SPEED >> 1);
 ;PCODE: $00000372 VOL: 0
 ;PCODE: $00000373 VOL: 0
-; 0000 028D 
-; 0000 028E         /* Menu implementation */
-; 0000 028F         switch(menu()) {
+; 0000 0240     lcd_clear();
 ;PCODE: $00000374 VOL: 0
-; 0000 0290         case 0: /* auto range */
+; 0000 0241     delay_ms(MENU_SPEED >> 2);
 ;PCODE: $00000375 VOL: 0
 ;PCODE: $00000376 VOL: 0
-; 0000 0291           rangemode |= RANGE_AUTO;
 ;PCODE: $00000377 VOL: 0
+; 0000 0242   }
 ;PCODE: $00000378 VOL: 0
+; 0000 0243 
+; 0000 0244   return i;
 ;PCODE: $00000379 VOL: 0
-; 0000 0292           break;
 ;PCODE: $0000037A VOL: 0
-; 0000 0293         case 1: /* low range */
 ;PCODE: $0000037B VOL: 0
+; 0000 0245 }
 ;PCODE: $0000037C VOL: 0
+;
+;void init(void)
+; 0000 0248 {
 ;PCODE: $0000037D VOL: 0
-; 0000 0294           rangemode &= ~(RANGE_AUTO | RANGE_HIGH);
 ;PCODE: $0000037E VOL: 0
+; 0000 0249 
+; 0000 024A   /* Set datadirections */
+; 0000 024B   DDRD = (1 << 4);    /* led output, rest input */
 ;PCODE: $0000037F VOL: 0
 ;PCODE: $00000380 VOL: 0
-; 0000 0295           break;
+; 0000 024C   PORTD &= ~(1 << 6); /* AIN0 port must be 0 */
 ;PCODE: $00000381 VOL: 0
-; 0000 0296         case 2: /* high range */
 ;PCODE: $00000382 VOL: 0
+; 0000 024D 
+; 0000 024E   /* Enable button pull up resistor */
+; 0000 024F   PORTD |= (1 << 2);
 ;PCODE: $00000383 VOL: 0
 ;PCODE: $00000384 VOL: 0
-; 0000 0297           rangemode &= ~RANGE_AUTO;
+; 0000 0250 
+; 0000 0251   /* Setup timer1 to normal operation */
+; 0000 0252   TCCR1A = 0;
 ;PCODE: $00000385 VOL: 0
 ;PCODE: $00000386 VOL: 0
+; 0000 0253   TCCR1B = 0;
 ;PCODE: $00000387 VOL: 0
-; 0000 0298           rangemode |= RANGE_HIGH;
 ;PCODE: $00000388 VOL: 0
+; 0000 0254   TIMSK = (1 << TOIE1); //(mega8)
 ;PCODE: $00000389 VOL: 0
 ;PCODE: $0000038A VOL: 0
-; 0000 0299           break;
+; 0000 0255   // TIMSK1 = (1<<TOIE1); //(mega48/88/168)
+; 0000 0256 
+; 0000 0257   /* Setup analog comperator to generate rising edge interrupt */
+; 0000 0258   ACSR = (1 << ACIS0) | (1 << ACIS1) | (1 << ACIE);
 ;PCODE: $0000038B VOL: 0
-; 0000 029A         case 3:
 ;PCODE: $0000038C VOL: 0
+; 0000 0259 
+; 0000 025A   /* Setup analog comperator to use ADMUX */
+; 0000 025B   ADMUX = ADMUX_LOW;
 ;PCODE: $0000038D VOL: 0
 ;PCODE: $0000038E VOL: 0
-; 0000 029B           calibrate_zero();
+; 0000 025C   SFIOR |= (1 << ACME);
 ;PCODE: $0000038F VOL: 0
-; 0000 029C           break;
 ;PCODE: $00000390 VOL: 0
-; 0000 029D         case 4:
 ;PCODE: $00000391 VOL: 0
+; 0000 025D   // ADCSRB |= (1<<ACME);
+; 0000 025E   // DIDR1 |= (1<<AIN1D)|(1<<AIN0D);
+; 0000 025F }
 ;PCODE: $00000392 VOL: 0
 ;PCODE: $00000393 VOL: 0
-; 0000 029E           calibrate();
+;
+;void main(void)
+; 0000 0262 {
 ;PCODE: $00000394 VOL: 0
-; 0000 029F           break;
+; 0000 0263 
+; 0000 0264   // Declare your local variables here
+; 0000 0265   unsigned long l;
+; 0000 0266 
+; 0000 0267   // Input/Output Ports initialization
+; 0000 0268   // Port B initialization
+; 0000 0269   // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+; 0000 026A   DDRB = (1 << DDB7) | (1 << DDB6) | (1 << DDB5) | (1 << DDB4) | (1 << DDB3) | (1 << DDB2) | (1 << DDB1) | (1 << DDB0);
 ;PCODE: $00000395 VOL: 0
-; 0000 02A0         case 5:
+;	l -> Y+0
 ;PCODE: $00000396 VOL: 0
 ;PCODE: $00000397 VOL: 0
+; 0000 026B   // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+; 0000 026C   PORTB = (0 << PORTB7) | (0 << PORTB6) | (0 << PORTB5) | (0 << PORTB4) | (0 << PORTB3) | (0 << PORTB2) | (0 << PORTB1)  ...
 ;PCODE: $00000398 VOL: 0
-; 0000 02A1           eeprom_write();
 ;PCODE: $00000399 VOL: 0
-; 0000 02A2           break;
+; 0000 026D 
+; 0000 026E   // Port C initialization
+; 0000 026F   // Function: Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+; 0000 0270   DDRC = (0 << DDC6) | (0 << DDC5) | (0 << DDC4) | (0 << DDC3) | (0 << DDC2) | (0 << DDC1) | (0 << DDC0);
 ;PCODE: $0000039A VOL: 0
-; 0000 02A3         }
 ;PCODE: $0000039B VOL: 0
-; 0000 02A4 
-; 0000 02A5       }
-; 0000 02A6       else
+; 0000 0271   // State: Bit6=T Bit5=T Bit4=T Bit3=T Bit2=T Bit1=T Bit0=T
+; 0000 0272   PORTC = (0 << PORTC6) | (0 << PORTC5) | (0 << PORTC4) | (0 << PORTC3) | (0 << PORTC2) | (0 << PORTC1) | (0 << PORTC0);
 ;PCODE: $0000039C VOL: 0
 ;PCODE: $0000039D VOL: 0
-; 0000 02A7         calc_and_show(l);
+; 0000 0273 
+; 0000 0274   // Port D initialization
+; 0000 0275   // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+; 0000 0276   DDRD = (0 << DDD7) | (0 << DDD6) | (0 << DDD5) | (0 << DDD4) | (0 << DDD3) | (0 << DDD2) | (0 << DDD1) | (0 << DDD0);
 ;PCODE: $0000039E VOL: 0
 ;PCODE: $0000039F VOL: 0
-; 0000 02A8     }
+; 0000 0277   // State: Bit7=T Bit6=T Bit5=T Bit4=T Bit3=T Bit2=T Bit1=T Bit0=T
+; 0000 0278   PORTD = (0 << PORTD7) | (0 << PORTD6) | (0 << PORTD5) | (0 << PORTD4) | (0 << PORTD3) | (0 << PORTD2) | (0 << PORTD1)  ...
 ;PCODE: $000003A0 VOL: 0
 ;PCODE: $000003A1 VOL: 0
+; 0000 0279 
+; 0000 027A   // Timer/Counter 0 initialization
+; 0000 027B   // Clock source: System Clock
+; 0000 027C   // Clock value: Timer 0 Stopped
+; 0000 027D   TCCR0 = (0 << CS02) | (0 << CS01) | (0 << CS00);
 ;PCODE: $000003A2 VOL: 0
-; 0000 02A9 }
 ;PCODE: $000003A3 VOL: 0
+; 0000 027E   TCNT0 = 0x00;
 ;PCODE: $000003A4 VOL: 0
 ;PCODE: $000003A5 VOL: 0
+; 0000 027F 
+; 0000 0280   // Timer/Counter 1 initialization
+; 0000 0281   // Clock source: System Clock
+; 0000 0282   // Clock value: Timer1 Stopped
+; 0000 0283   // Mode: Normal top=0xFFFF
+; 0000 0284   // OC1A output: Disconnected
+; 0000 0285   // OC1B output: Disconnected
+; 0000 0286   // Noise Canceler: Off
+; 0000 0287   // Input Capture on Falling Edge
+; 0000 0288   // Timer1 Overflow Interrupt: Off
+; 0000 0289   // Input Capture Interrupt: Off
+; 0000 028A   // Compare A Match Interrupt: Off
+; 0000 028B   // Compare B Match Interrupt: Off
+; 0000 028C   TCCR1A = (0 << COM1A1) | (0 << COM1A0) | (0 << COM1B1) | (0 << COM1B0) | (0 << WGM11) | (0 << WGM10);
 ;PCODE: $000003A6 VOL: 0
+;PCODE: $000003A7 VOL: 0
+; 0000 028D   TCCR1B = (0 << ICNC1) | (0 << ICES1) | (0 << WGM13) | (0 << WGM12) | (0 << CS12) | (0 << CS11) | (0 << CS10);
+;PCODE: $000003A8 VOL: 0
+;PCODE: $000003A9 VOL: 0
+; 0000 028E   TCNT1H = 0x00;
+;PCODE: $000003AA VOL: 0
+;PCODE: $000003AB VOL: 0
+; 0000 028F   TCNT1L = 0x00;
+;PCODE: $000003AC VOL: 0
+;PCODE: $000003AD VOL: 0
+; 0000 0290   ICR1H = 0x00;
+;PCODE: $000003AE VOL: 0
+;PCODE: $000003AF VOL: 0
+; 0000 0291   ICR1L = 0x00;
+;PCODE: $000003B0 VOL: 0
+;PCODE: $000003B1 VOL: 0
+; 0000 0292   OCR1AH = 0x00;
+;PCODE: $000003B2 VOL: 0
+;PCODE: $000003B3 VOL: 0
+; 0000 0293   OCR1AL = 0x00;
+;PCODE: $000003B4 VOL: 0
+;PCODE: $000003B5 VOL: 0
+; 0000 0294   OCR1BH = 0x00;
+;PCODE: $000003B6 VOL: 0
+;PCODE: $000003B7 VOL: 0
+; 0000 0295   OCR1BL = 0x00;
+;PCODE: $000003B8 VOL: 0
+;PCODE: $000003B9 VOL: 0
+; 0000 0296 
+; 0000 0297   // Timer/Counter 2 initialization
+; 0000 0298   // Clock source: System Clock
+; 0000 0299   // Clock value: Timer2 Stopped
+; 0000 029A   // Mode: Normal top=0xFF
+; 0000 029B   // OC2 output: Disconnected
+; 0000 029C   ASSR = 0 << AS2;
+;PCODE: $000003BA VOL: 0
+;PCODE: $000003BB VOL: 0
+; 0000 029D   TCCR2 = (0 << PWM2) | (0 << COM21) | (0 << COM20) | (0 << CTC2) | (0 << CS22) | (0 << CS21) | (0 << CS20);
+;PCODE: $000003BC VOL: 0
+;PCODE: $000003BD VOL: 0
+; 0000 029E   TCNT2 = 0x00;
+;PCODE: $000003BE VOL: 0
+;PCODE: $000003BF VOL: 0
+; 0000 029F   OCR2 = 0x00;
+;PCODE: $000003C0 VOL: 0
+;PCODE: $000003C1 VOL: 0
+; 0000 02A0 
+; 0000 02A1   // Timer(s)/Counter(s) Interrupt(s) initialization
+; 0000 02A2   TIMSK = (0 << OCIE2) | (0 << TOIE2) | (0 << TICIE1) | (0 << OCIE1A) | (0 << OCIE1B) | (0 << TOIE1) | (0 << TOIE0);
+;PCODE: $000003C2 VOL: 0
+;PCODE: $000003C3 VOL: 0
+; 0000 02A3 
+; 0000 02A4   // External Interrupt(s) initialization
+; 0000 02A5   // INT0: Off
+; 0000 02A6   // INT1: Off
+; 0000 02A7   MCUCR = (0 << ISC11) | (0 << ISC10) | (0 << ISC01) | (0 << ISC00);
+;PCODE: $000003C4 VOL: 0
+;PCODE: $000003C5 VOL: 0
+; 0000 02A8 
+; 0000 02A9   // USART initialization
+; 0000 02AA   // USART disabled
+; 0000 02AB   UCSRB = (0 << RXCIE) | (0 << TXCIE) | (0 << UDRIE) | (0 << RXEN) | (0 << TXEN) | (0 << UCSZ2) | (0 << RXB8) | (0 << TX ...
+;PCODE: $000003C6 VOL: 0
+;PCODE: $000003C7 VOL: 0
+; 0000 02AC 
+; 0000 02AD   // Analog Comparator initialization
+; 0000 02AE   // Analog Comparator: Off
+; 0000 02AF   // The Analog Comparator's positive input is
+; 0000 02B0   // connected to the AIN0 pin
+; 0000 02B1   // The Analog Comparator's negative input is
+; 0000 02B2   // connected to the AIN1 pin
+; 0000 02B3   ACSR = (1 << ACD) | (0 << ACBG) | (0 << ACO) | (0 << ACI) | (0 << ACIE) | (0 << ACIC) | (0 << ACIS1) | (0 << ACIS0);
+;PCODE: $000003C8 VOL: 0
+;PCODE: $000003C9 VOL: 0
+; 0000 02B4   SFIOR = (0 << ACME);
+;PCODE: $000003CA VOL: 0
+;PCODE: $000003CB VOL: 0
+; 0000 02B5 
+; 0000 02B6   // ADC initialization
+; 0000 02B7   // ADC disabled
+; 0000 02B8   ADCSRA = (0 << ADEN) | (0 << ADSC) | (0 << ADFR) | (0 << ADIF) | (0 << ADIE) | (0 << ADPS2) | (0 << ADPS1) | (0 << ADP ...
+;PCODE: $000003CC VOL: 0
+;PCODE: $000003CD VOL: 0
+; 0000 02B9 
+; 0000 02BA   // SPI initialization
+; 0000 02BB   // SPI disabled
+; 0000 02BC   SPCR = (0 << SPIE) | (0 << SPE) | (0 << DORD) | (0 << MSTR) | (0 << CPOL) | (0 << CPHA) | (0 << SPR1) | (0 << SPR0);
+;PCODE: $000003CE VOL: 0
+;PCODE: $000003CF VOL: 0
+; 0000 02BD 
+; 0000 02BE   // TWI initialization
+; 0000 02BF   // TWI disabled
+; 0000 02C0   TWCR = (0 << TWEA) | (0 << TWSTA) | (0 << TWSTO) | (0 << TWEN) | (0 << TWIE);
+;PCODE: $000003D0 VOL: 0
+;PCODE: $000003D1 VOL: 0
+; 0000 02C1 
+; 0000 02C2   lcd_init(16);
+;PCODE: $000003D2 VOL: 0
+;PCODE: $000003D3 VOL: 0
+; 0000 02C3 
+; 0000 02C4   init(); // init peripherals/adc/timers/etc..
+;PCODE: $000003D4 VOL: 0
+; 0000 02C5 
+; 0000 02C6   eeprom_read(); // reads calibration values or settings from EEPROM.
+;PCODE: $000003D5 VOL: 0
+; 0000 02C7 
+; 0000 02C8 #asm("sei"); // enables global interrupts
+;PCODE: $000003D6 VOL: 0
+	sei
+;PCODE: $000003D7 VOL: 0
+; 0000 02C9 
+; 0000 02CA   LED_OFF; // turns off an LED (probably an indicator for measurement status).
+;PCODE: $000003D8 VOL: 0
+;PCODE: $000003D9 VOL: 0
+; 0000 02CB 
+; 0000 02CC   rangemode = RANGE_AUTO; // setting Up the Measurement Mode
+;PCODE: $000003DA VOL: 0
+;PCODE: $000003DB VOL: 0
+; 0000 02CD 
+; 0000 02CE   while (1)
+;PCODE: $000003DC VOL: 0
+; 0000 02CF   {
+; 0000 02D0     /* Toggle high/low threshold */
+; 0000 02D1     rangemode ^= RANGE_HIGH_THRESH;
+;PCODE: $000003DD VOL: 0
+;PCODE: $000003DE VOL: 0
+;PCODE: $000003DF VOL: 0
+; 0000 02D2     l = measure();
+;PCODE: $000003E0 VOL: 0
+;PCODE: $000003E1 VOL: 0
+; 0000 02D3 
+; 0000 02D4     // sprintf(buf, "ADC: %u", l);  // or whatever variable
+; 0000 02D5     // lcd_string(buf,0);
+; 0000 02D6     // delay_ms(1000);
+; 0000 02D7     if (BUTTON_PUSHED)
+;PCODE: $000003E2 VOL: 0
+;PCODE: $000003E3 VOL: 0
+;PCODE: $000003E4 VOL: 0
+; 0000 02D8     {
+; 0000 02D9       /* Stop any cap. charging */
+; 0000 02DA       LED_OFF;
+;PCODE: $000003E5 VOL: 0
+;PCODE: $000003E6 VOL: 0
+; 0000 02DB       LOW_RANGE;
+;PCODE: $000003E7 VOL: 0
+;PCODE: $000003E8 VOL: 0
+;PCODE: $000003E9 VOL: 0
+;PCODE: $000003EA VOL: 0
+; 0000 02DC       DISCHARGE_ON;
+;PCODE: $000003EB VOL: 0
+;PCODE: $000003EC VOL: 0
+; 0000 02DD 
+; 0000 02DE       /* Menu implementation */
+; 0000 02DF       switch (menu())
+;PCODE: $000003ED VOL: 0
+; 0000 02E0       {
+; 0000 02E1       case 0: /* auto range */
+;PCODE: $000003EE VOL: 0
+;PCODE: $000003EF VOL: 0
+; 0000 02E2         rangemode |= RANGE_AUTO;
+;PCODE: $000003F0 VOL: 0
+;PCODE: $000003F1 VOL: 0
+;PCODE: $000003F2 VOL: 0
+; 0000 02E3         break;
+;PCODE: $000003F3 VOL: 0
+; 0000 02E4       case 1: /* low range */
+;PCODE: $000003F4 VOL: 0
+;PCODE: $000003F5 VOL: 0
+;PCODE: $000003F6 VOL: 0
+; 0000 02E5         rangemode &= ~(RANGE_AUTO | RANGE_HIGH);
+;PCODE: $000003F7 VOL: 0
+;PCODE: $000003F8 VOL: 0
+;PCODE: $000003F9 VOL: 0
+; 0000 02E6         break;
+;PCODE: $000003FA VOL: 0
+; 0000 02E7       case 2: /* high range */
+;PCODE: $000003FB VOL: 0
+;PCODE: $000003FC VOL: 0
+;PCODE: $000003FD VOL: 0
+; 0000 02E8         rangemode &= ~RANGE_AUTO;
+;PCODE: $000003FE VOL: 0
+;PCODE: $000003FF VOL: 0
+;PCODE: $00000400 VOL: 0
+; 0000 02E9         rangemode |= RANGE_HIGH;
+;PCODE: $00000401 VOL: 0
+;PCODE: $00000402 VOL: 0
+;PCODE: $00000403 VOL: 0
+; 0000 02EA         break;
+;PCODE: $00000404 VOL: 0
+; 0000 02EB       case 3:
+;PCODE: $00000405 VOL: 0
+;PCODE: $00000406 VOL: 0
+;PCODE: $00000407 VOL: 0
+; 0000 02EC         calibrate_zero();
+;PCODE: $00000408 VOL: 0
+; 0000 02ED         break;
+;PCODE: $00000409 VOL: 0
+; 0000 02EE       case 4:
+;PCODE: $0000040A VOL: 0
+;PCODE: $0000040B VOL: 0
+;PCODE: $0000040C VOL: 0
+; 0000 02EF         calibrate();
+;PCODE: $0000040D VOL: 0
+; 0000 02F0         break;
+;PCODE: $0000040E VOL: 0
+; 0000 02F1       case 5:
+;PCODE: $0000040F VOL: 0
+;PCODE: $00000410 VOL: 0
+;PCODE: $00000411 VOL: 0
+; 0000 02F2         eeprom_write();
+;PCODE: $00000412 VOL: 0
+; 0000 02F3         break;
+;PCODE: $00000413 VOL: 0
+; 0000 02F4       }
+;PCODE: $00000414 VOL: 0
+; 0000 02F5     }
+; 0000 02F6     else
+;PCODE: $00000415 VOL: 0
+;PCODE: $00000416 VOL: 0
+; 0000 02F7       calc_and_show(l);
+;PCODE: $00000417 VOL: 0
+;PCODE: $00000418 VOL: 0
+; 0000 02F8   }
+;PCODE: $00000419 VOL: 0
+;PCODE: $0000041A VOL: 0
+;PCODE: $0000041B VOL: 0
+; 0000 02F9 }
+;PCODE: $0000041C VOL: 0
+;PCODE: $0000041D VOL: 0
+;PCODE: $0000041E VOL: 0
+;PCODE: $0000041F VOL: 0
