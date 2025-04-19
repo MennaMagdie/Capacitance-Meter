@@ -10,7 +10,7 @@ set_admux                                                                       
 menu_item                                                                         0x021E      12
 calib                                                                             0x022A       8
 calib_offset                                                                      0x0232      16
-_base_y                                                                           0x0242       4
+_base_y (alcd.lib)                                                                0x0242       4
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
