@@ -2,7 +2,7 @@
 This program was created by the
 CodeWizardAVR V3.14 Advanced
 Automatic Program Generator
-© Copyright 1998-2014 Pavel Haiduc, HP InfoTech s.r.l.
+ï¿½ Copyright 1998-2014 Pavel Haiduc, HP InfoTech s.r.l.
 http://www.hpinfotech.com
 
 Project : 
@@ -729,6 +729,7 @@ TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 // D7 - PORTC Bit 3
 // Characters/line: 16
 lcd_init(16);
+delay_ms(100);
 init(); // init peripherals/adc/timers/etc..
 
   eeprom_read(); // reads calibration values or settings from EEPROM.
@@ -782,4 +783,5 @@ init(); // init peripherals/adc/timers/etc..
     else
       calc_and_show(l);
   }
+  
 }

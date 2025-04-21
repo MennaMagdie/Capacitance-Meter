@@ -10,7 +10,7 @@ set_admux                                                                       
 menu_item                                                                         0x021E      12
 calib                                                                             0x022A       8
 calib_offset                                                                      0x0232      16
-_base_y (alcd.lib)                                                                0x0242       4
+_base_y                                                                           0x0242       4
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
@@ -34,19 +34,19 @@ eeprom_read                                                                     
 eeprom_write                                                                      0x00163     19
 lcd_string                                                                        0x00176     28
 long2ascii                                                                        0x00192     96
-measure                                                                           0x001F2    157
-calc_and_show                                                                     0x0028F    152
-calibrate_zero                                                                    0x00327     15
-calibrate                                                                         0x00336     76
-menu                                                                              0x00382     45
-init                                                                              0x003AF     17
-main                                                                              0x003C0     94
-_lcd_write_nibble_G100                                                            0x0041E     21
-_lcd_write_data                                                                   0x00433     12
-lcd_gotoxy                                                                        0x0043F     13
-lcd_clear                                                                         0x0044C     12
-lcd_putchar                                                                       0x00458     21
-lcd_puts                                                                          0x0046D     17
-lcd_init                                                                          0x0047E     46
-eeprom_read_block                                                                 0x004AC     25
-eeprom_write_block                                                                0x004C5     28
+measure                                                                           0x001F2    153
+calc_and_show                                                                     0x0028B    152
+calibrate_zero                                                                    0x00323     15
+calibrate                                                                         0x00332     76
+menu                                                                              0x0037E     45
+init                                                                              0x003AB     17
+main                                                                              0x003BC     96
+_lcd_write_nibble_G100                                                            0x0041C     21
+_lcd_write_data                                                                   0x00431     12
+lcd_gotoxy                                                                        0x0043D     13
+lcd_clear                                                                         0x0044A     12
+lcd_putchar                                                                       0x00456     21
+lcd_puts                                                                          0x0046B     17
+lcd_init                                                                          0x0047C     46
+eeprom_read_block                                                                 0x004AA     25
+eeprom_write_block                                                                0x004C3     28
